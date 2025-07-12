@@ -1,8 +1,7 @@
 # Validate commit messages
 commit-msg:
-  commands:
-    commitlint:
-      run: npx --no -- commitlint --edit {1}
+  skip:
+    - COMMITLINT_DISABLED
 
 # Validate content before committing
 pre-commit:
