@@ -1,7 +1,7 @@
 import React from 'react';
 
 type Props = {
-  images: string[];
+  images: any[];
   currentIndex: number;
   setCurrentIndex: (i: number) => void;
 };

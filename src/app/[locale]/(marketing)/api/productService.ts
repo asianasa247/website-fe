@@ -2,15 +2,13 @@
 
 import api from './api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export const getProductList = async (params: { Page: number; PageSize: number; Type: number }) => {
-  const response = await api.get(`${API_BASE_URL}/WebProduct/getById`, { params });
+  const response = await api.get(`/WebProduct/getById`, { params });
   return response.data;
 };
 
 export const getProductDetail = async (id: any) => {
-  const response = await api.get(`${API_BASE_URL}/WebProduct/getById/${id}`);
+  const response = await api.get(`/WebProduct/getById/${id}`);
   return response.data;
 };
 
@@ -19,7 +17,7 @@ export const getProductPagging = async (
   pageSize: number = 10,
   q: string = '',
 ) => {
-  let url = `${API_BASE_URL}/WebProduct/get-products-pagging?pageNum=${pageNum}&pageSize=${pageSize}`;
+  let url = `/WebProduct/get-products-pagging?pageNum=${pageNum}&pageSize=${pageSize}`;
   if (q !== '') {
     url += `&q=${q}`;
   }
