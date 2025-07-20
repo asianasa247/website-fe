@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ProductImages from '@/components/ProductImages';
 import ProductInfo from '@/components/ProductInfo';
+import dashboardService from '../../api/dashboard';
 import { getProductDetail } from '../../api/productService';
 
 const ProductDetailClient = () => {
@@ -26,16 +27,17 @@ const ProductDetailClient = () => {
     const fetchData = async () => {
       try {
         const res = await getProductDetail(id);
-        console.log('Product detail response:', res);
+
         setProduct(res.data.good);
         setCategory(res.data.category);
+        const res1 = await dashboardService.getProductByCategory(res.data.category.code);
+        console.log('Related products:', res1.data);
       } catch (err) {
         console.error('Failed to fetch product detail:', err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -71,6 +73,15 @@ const ProductDetailClient = () => {
           setQuantity={setQuantity}
           category={category}
         />
+      </div>
+
+      <div className="related-products mt-16">
+        <h2 className="text-3xl font-medium text-center mb-10">
+          Sản phẩm liên quan
+        </h2>
+        <div className="content-product-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        </div>
       </div>
     </div>
   );

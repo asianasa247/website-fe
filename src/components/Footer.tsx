@@ -1,99 +1,131 @@
-import { useTranslation } from 'next-i18next';
-import Image from 'next/image';
+'use client';
+
+import type { MenuItemModel } from './layout/header';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { getCompanyInfo, getIntroduceList, getProductsByCategory, getSocials, getWebCategories, subscribeMail } from '@/services/api';
+import authService from '@/app/[locale]/(marketing)/api/auth';
+import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
+import { getIntroduceList } from '@/app/[locale]/(marketing)/api/introduceService';
 
 const Footer = () => {
-  const { t, i18n } = useTranslation();
-
-  const [webCategories, setWebCategories] = useState([]);
-  const [companyInfo, setCompanyInfo] = useState(null);
-  const [aboutList, setAboutList] = useState([]);
-  const [socials, setSocials] = useState([]);
+  const [webCategories, setWebCategories] = useState<any[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<any>();
+  const [aboutList, setAboutList] = useState<any[]>([]);
+  const [socials, setSocials] = useState<any[]>([]);
 
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [note, setNote] = useState('');
 
   useEffect(() => {
-    getCompanyInfo().then(res => setCompanyInfo(res.data));
-    getIntroduceList().then(res => setAboutList(res.data));
-    getSocials().then(setSocials);
+    authService.getCompany().then((company) => {
+      if (company) {
+        setCompanyInfo(company.data);
+      } else {
+        console.warn('No company data found');
+      }
+    });
+    dashboardService.getSocials().then((res) => {
+      setSocials(res);
+    }).catch((error) => {
+      console.error('Failed to fetch socials:', error);
+    });
 
-    getWebCategories().then(async (res) => {
-      const categories = res.data.filter(c => c.type === 7);
-      const items = await Promise.all(
-        categories.map(async (cat) => {
-          const products = await getProductsByCategory({ menuType: cat.code });
-          return { ...cat, label: cat.name, icon: cat.icon, products };
-        }),
-      );
-      setWebCategories(items);
+    dashboardService.getListWebCategory().then((res) => {
+      setWebCategories(transformToHierarchicalMenu(res.data));
+    });
+    getIntroduceList().then((res) => {
+      setAboutList(res.data);
+    }).catch((error) => {
+      console.error('Failed to fetch about list:', error);
     });
   }, []);
 
-  const getTitle = (item) => {
-    const lang = i18n.language;
-    if (lang === 'en') {
-      return item.titleEnglish || item.title;
-    }
-    if (lang === 'ko') {
-      return item.titleKorean || item.title;
-    }
+  const getTitle = (item: any) => {
     return item.title;
   };
 
-  const loadNameCategoryByLang = (cat) => {
-    const lang = i18n.language;
-    if (lang === 'en') {
-      return cat.nameEnglish || cat.name;
-    }
-    if (lang === 'ko') {
-      return cat.nameKorea || cat.name;
-    }
+  const loadNameCategoryByLang = (cat: any) => {
     return cat.name;
   };
+  function transformToHierarchicalMenu(menuItems: MenuItemModel[]): MenuItemModel[] {
+  // Filter parent items with type = 5
+    const parentItems = menuItems.filter(item => item.type === 5 && item.isShowWeb);
 
-  const handleSubscribe = async (e) => {
+    // Map all menu items for lookup
+    const itemMap = new Map<string, MenuItemModel>();
+    menuItems.forEach((item) => {
+      itemMap.set(item.code, { ...item, children: [] });
+    });
+
+    // Build hierarchical structure
+    const result: MenuItemModel[] = [];
+
+    parentItems.forEach((item) => {
+      const menuItem = itemMap.get(item.code);
+      if (!menuItem) {
+        return;
+      }
+
+      if (item.codeParent) {
+      // If the item has a parent, add it as a child
+        const parent = itemMap.get(item.codeParent);
+        if (parent) {
+          parent.children?.push(menuItem);
+        }
+      } else {
+      // Root items
+        result.push(menuItem);
+      }
+    });
+
+    // Add remaining children to their respective parents
+    menuItems.filter(item => item.type !== 5 && item.isShowWeb).forEach((item) => {
+      if (item.codeParent) {
+        const parent = itemMap.get(item.codeParent);
+        const child = itemMap.get(item.code);
+        if (parent && child) {
+          parent.children?.push(child);
+        }
+      }
+    });
+
+    // Sort items by 'numberItem'
+    const sortByNumberItem = (items: MenuItemModel[]) => {
+      return items.sort((a, b) => (a.numberItem ?? 0) - (b.numberItem ?? 0));
+    };
+
+    const sortedResult = sortByNumberItem(result);
+
+    sortedResult.forEach((item) => {
+      if (item.children && item.children.length > 0) {
+        item.children = sortByNumberItem(item.children);
+      }
+    });
+    console.log('Sorted hierarchical menu:', sortedResult);
+    // Return the sorted result
+
+    return sortedResult;
+  }
+
+  const handleSubscribe = async (e: any) => {
     e.preventDefault();
-    if (!email) {
-      return;
-    }
-    try {
-      await subscribeMail(email, phoneNumber, note);
-      alert(t('label.register_email_success'));
-    } catch (err) {
-      alert('Subscription failed');
-    }
   };
 
   return (
     <div className="footer-wrapper bg-gray-100 text-gray-800 mt-10 px-6 py-10">
-      <hr className="mb-6" />
 
       {/* Danh mục chuyên mục */}
       <div className="category-list flex flex-wrap gap-4 justify-center mb-6">
         {webCategories.map(item => (
           <div key={item.code} className="category-item flex items-center gap-2">
             <a href={`#${item.code}`} className="flex items-center gap-2 hover:underline">
-              {item.icon && (
-                <Image
-                  src={process.env.NEXT_PUBLIC_SERVER_IMAGE + item.icon}
-                  width={28}
-                  height={28}
-                  alt="icon"
-                  className="object-contain"
-                  onError={e => e.currentTarget.style.display = 'none'}
-                />
-              )}
+
               <span className="text-sm">{loadNameCategoryByLang(item)}</span>
             </a>
           </div>
         ))}
       </div>
-
-      <hr className="mb-6" />
 
       {/* Footer columns */}
       <div className="footer-columns grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
@@ -102,7 +134,7 @@ const Footer = () => {
           <h5 className="font-semibold mb-2 text-base">{companyInfo?.name}</h5>
           <p>
             <strong>
-              {t('label.address')}
+              Địa chỉ
               :
             </strong>
             {' '}
@@ -110,14 +142,14 @@ const Footer = () => {
           </p>
           <p>
             <strong>
-              {t('label.tax_code')}
+              Mã số thuế
               :
             </strong>
             {' '}
             {companyInfo?.mst}
             <br />
             <strong>
-              {t('label.phone')}
+              Sô điện thoại
               :
             </strong>
             {' '}
@@ -125,7 +157,7 @@ const Footer = () => {
           </p>
           <p>
             <strong>
-              {t('label.email')}
+              Email
               :
             </strong>
             {' '}
@@ -135,22 +167,20 @@ const Footer = () => {
 
         {/* Cột 2 */}
         <div className="footer-col">
-          <h5 className="font-semibold mb-2 text-base">{t('label.terms_conditions')}</h5>
+          <h5 className="font-semibold mb-2 text-base">ĐIỀU KHOẢN & QUY ĐỊNH</h5>
           {aboutList.map(item => (
             <div key={item.id}>
-              <Link href={item.link || `/introduce/${item.id}`} className="text-blue-600 hover:underline">
+              <Link href={item.link || `/introduce/${item.id}`} className=" hover:underline">
                 {getTitle(item)}
               </Link>
             </div>
           ))}
         </div>
-
         {/* Cột 3 */}
         <div className="footer-col">
           <form onSubmit={handleSubscribe} className="subscribe-form">
             <input
               type="email"
-              placeholder={t('label.your_email')}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -158,7 +188,6 @@ const Footer = () => {
             />
             <input
               type="tel"
-              placeholder={t('label.phone')}
               value={phoneNumber}
               onChange={e => setPhoneNumber(e.target.value)}
               className="w-full px-3 py-2 border rounded mb-2"
@@ -193,8 +222,8 @@ const Footer = () => {
                 className="hover:opacity-80"
                 title={social.title}
               >
-                <Image
-                  src={social.fileUrl}
+                <img
+                  src={process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + social.fileUrl}
                   width={32}
                   height={32}
                   alt="social-icon"

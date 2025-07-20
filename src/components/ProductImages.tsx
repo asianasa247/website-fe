@@ -7,7 +7,7 @@ type Props = {
 };
 
 export default function ProductImages({ images, currentIndex, setCurrentIndex }: Props) {
-  const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL;
+  const imageUrl = process.env.NEXT_PUBLIC_SERVER_URL_IMAGE;
 
   return (
     <div className="w-full md:w-2/5 flex flex-col gap-4">

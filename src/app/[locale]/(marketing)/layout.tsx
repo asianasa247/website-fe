@@ -1,4 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
+import Footer from '@/components/Footer';
 import Header from '@/components/layout/header';
 
 export default async function Layout(props: {
@@ -14,6 +15,7 @@ export default async function Layout(props: {
       <div className="w-full px-1 text-gray-700 antialiased">
         <main>{props.children}</main>
       </div>
+      <Footer />
     </>
   );
 }

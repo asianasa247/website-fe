@@ -10,7 +10,7 @@ export default function ProductInfo({
   category,
 }: any) {
   const lang = 'vn';
-
+  console.log('ProductInfo:', product, category);
   const formatCurrency = (value: number) => {
     return value?.toLocaleString('vi-VN'); // Nếu muốn dùng format theo ngôn ngữ thì sửa đây
   };
