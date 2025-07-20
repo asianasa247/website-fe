@@ -176,12 +176,14 @@ export default function Header() {
                 {showMore && (
                   <ul className="absolute left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[160px] z-50">
                     {moreMenu.map(item => (
-                      <li
-                        key={item.code}
-                        className="px-4 py-2 hover:bg-green-50 cursor-pointer whitespace-nowrap"
-                      >
-                        {item.name}
-                      </li>
+                      <Link href="/" key={item.code}>
+                        <li
+                          key={item.code}
+                          className="px-4 py-2 hover:bg-green-50 cursor-pointer whitespace-nowrap"
+                        >
+                          {item.name}
+                        </li>
+                      </Link>
                     ))}
                   </ul>
                 )}
