@@ -107,7 +107,7 @@ export default function ProductZone({
             )}
 
             {/* Image */}
-            <Link href={`/product-detail/${product.id}`}>
+            <Link href={`/products/${product.id}`}>
               <img
                 src={process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + product.image1}
                 alt={product.webGoodNameVietNam || 'product'}
@@ -120,7 +120,7 @@ export default function ProductZone({
             <div className="flex-1 flex flex-col justify-between">
               <div>
                 <h3 className="font-semibold text-sm text-gray-800 line-clamp-2 mb-1">
-                  <Link href={`/product-detail/${product.id}`}>
+                  <Link href={`/products/${product.id}`}>
                     {product.webGoodNameVietNam}
                   </Link>
                 </h3>

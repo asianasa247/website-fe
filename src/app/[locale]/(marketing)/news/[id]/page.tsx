@@ -1,3 +1,5 @@
+/* eslint-disable react-dom/no-dangerously-set-innerhtml */
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import DOMPurify from 'dompurify';
@@ -30,7 +32,7 @@ const NewsDetailPage = () => {
 
     const loadNewsList = async () => {
       try {
-        const response = await getNewsList({ Page: 1, PageSize: 20, Type: 'vi' });
+        const response = await getNewsList({ Page: 1, PageSize: 20, Type: 2 });
         const filtered = response.data.filter((item: any) => item.id !== Number(id)).slice(0, 5);
         setNewsList(filtered);
       } catch (err) {
@@ -51,7 +53,7 @@ const NewsDetailPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <img
-            src={news.file?.[0]?.fileUrl || '/images/no-image.png'}
+            src={`${process.env.NEXT_PUBLIC_SERVER_URL_IMAGE}/${news.file?.[0]?.fileUrl}` || '/images/no-image.png'}
             alt={news.title}
             className="w-full rounded"
           />
@@ -87,7 +89,7 @@ const NewsDetailPage = () => {
             {newsList.map(item => (
               <div key={item.id} className="flex gap-4">
                 <img
-                  src={item.images?.[0]?.fileUrl || '/images/no-image.png'}
+                  src={`${process.env.NEXT_PUBLIC_SERVER_URL_IMAGE}/${item.images?.[0]?.fileUrl}` || '/images/no-image.png'}
                   alt={item.title}
                   className="w-24 h-16 object-cover rounded"
                 />

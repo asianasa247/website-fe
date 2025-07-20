@@ -49,6 +49,7 @@ export default async function RootLayout(props: {
 
   return (
     <html lang={locale}>
+
       <body>
         <NextIntlClientProvider>
           <PostHogProvider>

@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import HomeClient from '@/components/HomeClient';
 import Slider from '@/components/Silder';
 import dashboardService from './api/dashboard';
@@ -39,6 +40,17 @@ export default async function Index() {
   // 4. Trả về giao diện
   return (
     <>
+      <Head>
+        <title>JWKJOB</title>
+        <meta name="description" content="A Next.js application using Next-Intl for localization." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       <Slider />
       <HomeClient webCategories={webCategories} />
     </>

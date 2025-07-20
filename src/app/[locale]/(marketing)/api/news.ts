@@ -1,22 +1,20 @@
 // services/news.service.ts
 
-import axios from 'axios';
-
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'https://your-api.com'}/WebNews`;
+import api from './api';
 
 type ListParams = any;
 
 export const getNewsList = async (params: ListParams) => {
-  const response = await axios.get(API_BASE, { params });
+  const response = await api.get(`/WebNews`, { params });
   return response.data;
 };
 
 export const getNewsHeadline = async (params: ListParams) => {
-  const response = await axios.get(`${API_BASE}/getnewheadline`, { params });
+  const response = await api.get(`/WebNews/getnewheadline`, { params });
   return response.data;
 };
 
 export const getNewsDetail = async (id: number) => {
-  const response = await axios.get(`${API_BASE}/${id}`);
+  const response = await api.get(`/WebNews/${id}`);
   return response.data;
 };
