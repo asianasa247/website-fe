@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import authService from '@/app/[locale]/(marketing)/api/auth';
@@ -201,8 +202,13 @@ export default function Header() {
         </form>
         {/* Actions */}
         <div className="flex gap-3 items-center">
-          <button className="bg-none border-none hover:text-green-600 cursor-pointer">Đăng nhập</button>
-          <button className="border border-green-100 rounded-full px-4 py-1 hover:bg-green-50 cursor-pointer">Đăng ký</button>
+          <Link href="/sign-in" className="text-green-600 hover:text-green-800">
+
+            Đăng nhập
+          </Link>
+          <Link href="/sign-up" className="text-green-600 hover:text-green-800">
+            Đăng ký
+          </Link>
           <button className="bg-none border-none text-xl hover:text-green-600 cursor-pointer">🤍</button>
           <button className="bg-none border-none text-xl hover:text-green-600 cursor-pointer">🛒</button>
           {/* Language */}

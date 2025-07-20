@@ -85,7 +85,7 @@ class AuthService {
   }
 
   async registUser(params: any) {
-    const res = await api.post('/auth/register-user-web', params);
+    const res = await api.post('/WebAuth/register', params);
     return res.data;
   }
 
