@@ -154,9 +154,11 @@ export default function Header() {
       {/* Main nav bar */}
       <div className="flex items-center justify-between px-10 py-4 border-b bg-white">
         {/* Logo */}
-        <div>
-          <Image src={companyLogo || '/logo'} alt="Logo" width={120} height={48} />
-        </div>
+        {companyLogo && (
+          <div>
+            <Image src={companyLogo || '/logo'} alt="Logo" width={120} height={48} />
+          </div>
+        )}
         {/* Menu */}
         <nav className="flex-1 ml-10">
           <ul className="flex gap-8 font-semibold relative">

@@ -14,7 +14,9 @@ const baseConfig: NextConfig = {
   images: {
     domains: [
       'asianasa.com', // Thêm domain ảnh của bạn ở đây
-      'cdn.example.com', // Thêm các domain khác nếu cần
+      'cdn.example.com',
+      'bh.asianasa.com',
+      // Thêm các domain khác nếu cần
     ],
     // Nếu bạn dùng ảnh qua https, không cần cấu hình thêm
   },
