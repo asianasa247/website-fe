@@ -111,7 +111,7 @@ export default function Header() {
         item.children = sortByNumberItem(item.children);
       }
     });
-
+    console.log('Transformed Menu:', sortedResult);
     return sortedResult;
   }
 
@@ -162,11 +162,16 @@ export default function Header() {
         {/* Menu */}
         <nav className="flex-1 ml-10">
           <ul className="flex gap-8 font-semibold relative">
-            {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer hover:text-green-600">
-                {item.name}
-              </li>
-            ))}
+            {mainMenu.map((item) => {
+              console.log('Menu Item:', item);
+              return (
+                <Link href={item.typeMenu} key={item.code}>
+                  <li className="cursor-pointer hover:text-green-600">
+                    {item.name}
+                  </li>
+                </Link>
+              );
+            })}
             {moreMenu.length > 0 && (
               <li
                 className="relative cursor-pointer hover:text-green-600 flex items-center gap-1"

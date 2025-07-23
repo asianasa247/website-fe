@@ -1,42 +1,52 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
+
 import { useEffect, useState } from 'react';
 import SliderLib from 'react-slick';
 import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
+type SliderItem = {
+  id: number;
+  title?: string;
+  type: number;
+  img: string;
+  isVideo: boolean;
+  adsensePosition: number;
+  image: string;
+};
+
 export default function Slider() {
-  const [sliders, setSliders] = useState<any[]>([]);
-  const lang = 'vi'; // hoặc lấy từ context/i18n nếu có
+  const [sliders, setSliders] = useState<SliderItem[]>([]);
+  const lang = 'vi'; // Hoặc lấy từ context hoặc URL nếu có
 
   useEffect(() => {
-    dashboardService.getAllWebSlider().then((res) => {
-      const slidersImage: any[] = [];
-      const slidersVideo: any[] = [];
-      const data = res.data || res;
-      if (Array.isArray(data) && data.length > 0) {
-        data.forEach((item: any) => {
-          if (item.adsensePosition === 3) {
-            if (item.isVideo) {
-              slidersVideo.push({
-                ...item,
-                image: item.img,
-              });
-              console.log(item.img);
-            } else {
+    const fetchSliders = async () => {
+      try {
+        const res = await dashboardService.getAllWebSlider();
+        const data = res.data || res;
+
+        const slidersImage: SliderItem[] = [];
+
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach((item: any) => {
+            if (item.adsensePosition === 3 && !item.isVideo) {
               slidersImage.push({
                 ...item,
-                image: process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + item.img,
+                image: `${process.env.NEXT_PUBLIC_SERVER_URL_IMAGE}${item.img}`,
               });
             }
-          }
-        });
+          });
+        }
+
+        setSliders(slidersImage);
+      } catch (err) {
+        console.error('Error loading sliders:', err);
       }
-      console.log('Sliders Image:', slidersImage);
-      setSliders(slidersImage); // Nếu bạn chỉ muốn hiển thị ảnh, dùng slidersImage
-    // Nếu muốn dùng cả video, bạn có thể lưu thêm state cho slidersVideo
-    });
+    };
+
+    fetchSliders();
   }, []);
 
   const filteredSliders = loadSliderByLang(sliders, lang);
@@ -47,7 +57,7 @@ export default function Slider() {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: filteredSliders.length > 1, // ❗ Tắt infinite nếu chỉ có 1 slide
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -57,14 +67,14 @@ export default function Slider() {
   };
 
   return (
-    <div className="w-full  max-w-none mx-auto px-0 py-0 overflow-hidden">
+    <div className="w-full max-w-none mx-auto px-0 py-0 overflow-hidden">
       <SliderLib {...settings}>
-        {filteredSliders.map((slide, idx) => (
-          <div key={slide.id || idx} className=" relative">
+        {filteredSliders.map(slide => (
+          <div key={slide.id} className="relative">
             <img
               src={slide.image}
               alt={slide.title || ''}
-              className="w-full h-[700px] object-cover"
+              className="w-full h-[500px] md:h-[700px] object-cover"
             />
           </div>
         ))}
@@ -72,7 +82,8 @@ export default function Slider() {
     </div>
   );
 }
-function loadSliderByLang(sliders: any[], lang: string) {
+
+function loadSliderByLang(sliders: SliderItem[], lang: string) {
   switch (lang) {
     case 'en':
       return sliders.filter(slide => slide.type === 1);
