@@ -7,28 +7,19 @@ import { getList } from '../api/recruitment';
 export default function RecruitmentPage() {
   const [recruitments, setRecruitments] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const pageSize = 6;
+  const pageSize = 10;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const params = {
-          page: currentPage,
-          limit: pageSize,
-        };
-        const result = await getList(params);
-
-        // Kỳ vọng result = { items: [...], total: number }
-        setRecruitments(result.items || []);
-        setTotalItems(result.total || 0);
-      } catch (error) {
-        console.error('Error fetching recruitment list:', error);
-      }
-    };
-
-    fetchData();
+    getList({ page: currentPage, pageSize })
+      .then((data) => {
+        setRecruitments(data.data);
+        setTotalItems(data.totalItems);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch recruitment data:', error);
+      });
   }, [currentPage]);
 
   return (

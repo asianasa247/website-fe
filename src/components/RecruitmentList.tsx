@@ -26,6 +26,7 @@ export default function RecruitmentList({
   onPageChange,
 }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
+  const url = process.env.NEXT_PUBLIC_API_URL || 'https://default-api-url.com';
 
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -49,7 +50,7 @@ export default function RecruitmentList({
             <div className="h-64 overflow-hidden">
               <img
                 src={
-                  recruit.imageUrl
+                  `${url}/${recruit.imageUrl}`
                   || 'https://viendaotaovcg.com/wp-content/uploads/2020/08/Banner-tuyen-dung-Organic-Life-2020.jpg'
                 }
                 alt={recruit.title}
