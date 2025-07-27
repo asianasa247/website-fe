@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-array-index-key */
 'use client';
 
 import Link from 'next/link';
@@ -30,9 +32,7 @@ export default function ProductZone({
   imageUrls,
   unit,
   isShowFavourite = true,
-  image,
 }: Props) {
-  console.log('Product Zone:', image);
   const [page, setPage] = useState(1);
   const rows = 4;
   const selectProducts = products?.slice(0, page * rows);
@@ -149,7 +149,7 @@ export default function ProductZone({
                 )}
               </div>
 
-              <button className="mt-4 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 rounded-full transition-all">
+              <button type="button" className="mt-4 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 rounded-full transition-all">
                 <i className="pi pi-shopping-cart" />
                 <span>Thêm vào giỏ hàng</span>
               </button>
@@ -162,6 +162,7 @@ export default function ProductZone({
       {products?.length > selectProducts?.length && (
         <div className="text-center">
           <button
+            type="button"
             onClick={() => setPage(prev => prev + 1)}
             className="px-5 py-2 text-sm rounded-full text-orange-600 border border-orange-500 hover:bg-orange-50 transition"
           >

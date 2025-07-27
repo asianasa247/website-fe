@@ -16,7 +16,7 @@ const NewsDetailPage = () => {
   const id = params?.id;
 
   useEffect(() => {
-    if (!id || isNaN(Number(id))) {
+    if (!id || Number.isNaN(Number(id))) {
       router.push('/news');
       return;
     }
@@ -42,6 +42,7 @@ const NewsDetailPage = () => {
 
     loadNewsDetail();
     loadNewsList();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (!news) {

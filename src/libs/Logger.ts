@@ -20,7 +20,7 @@ await configure({
     betterStack: fromAsyncSink(betterStackSink),
   },
   loggers: [
-    { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'warning' },
+    { category: ['logtape', 'meta'], sinks: ['console'], lowestLevel: 'error' },
     {
       category: ['app'],
       sinks: isServer() && Env.BETTER_STACK_SOURCE_TOKEN ? ['console', 'betterStack'] : ['console'],

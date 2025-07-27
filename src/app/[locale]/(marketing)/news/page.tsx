@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 // components/NewsList.tsx
 'use client';
 import Image from 'next/image';
@@ -78,7 +79,8 @@ export default function NewsList() {
       <div className="mt-4 flex justify-center gap-2">
         {Array.from({ length: Math.ceil(totalItems / pageSize) }).map((_, i) => (
           <button
-            key={i}
+            type="button"
+            key={i.toString()}
             onClick={() => setPage(i + 1)}
             className={`px-3 py-1 border rounded ${
               page === i + 1 ? 'bg-green-600 text-white' : 'bg-white text-black'

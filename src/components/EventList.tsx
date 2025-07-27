@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable @next/next/no-img-element */
 // components/EventList.tsx
 'use client';
 
@@ -93,7 +95,8 @@ export default function EventList() {
         <div className="flex justify-center mt-8 space-x-2">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
-              key={i}
+              type="button"
+              key={i.toString()}
               onClick={() => setCurrentPage(i)}
               className={`px-4 py-2 border rounded ${
                 currentPage === i

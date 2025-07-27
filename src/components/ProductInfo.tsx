@@ -2,15 +2,11 @@ import QuantitySelector from './QuantitySelector';
 
 export default function ProductInfo({
   product,
-  imageUrl,
-  images,
-  currentIndex,
   quantity,
   setQuantity,
   category,
 }: any) {
   const lang = 'vn';
-  console.log('ProductInfo:', product, category);
   const formatCurrency = (value: number) => {
     return value?.toLocaleString('vi-VN'); // Nếu muốn dùng format theo ngôn ngữ thì sửa đây
   };
@@ -19,12 +15,6 @@ export default function ProductInfo({
     let price = 0;
 
     switch (lang) {
-      case 'en':
-        price = product?.webPriceEnglish || 0;
-        break;
-      case 'ko':
-        price = product?.webPriceKorea || 0;
-        break;
       default:
         price = product?.webPriceVietNam || 0;
         break;
@@ -36,10 +26,10 @@ export default function ProductInfo({
   const displayPrice = getLocalizedPrice(true);
   const originalPrice = (() => {
     switch (lang) {
-      case 'en':
-        return product?.originalPriceEnglish;
-      case 'ko':
-        return product?.originalPriceKorea;
+      // case 'en':
+      //   return product?.originalPriceEnglish;
+      // case 'ko':
+      //   return product?.originalPriceKorea;
       default:
         return product?.originalPriceVietNam;
     }
@@ -62,7 +52,7 @@ export default function ProductInfo({
 
       <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
 
-      <button className="w-full py-3 bg-orange-500 text-white rounded-lg mb-6 hover:bg-orange-600 transition">
+      <button type="button" className="w-full py-3 bg-orange-500 text-white rounded-lg mb-6 hover:bg-orange-600 transition">
         🛒 Thêm vào giỏ
       </button>
 

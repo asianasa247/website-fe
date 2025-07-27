@@ -4,42 +4,17 @@ import { useEffect, useState } from 'react';
 import NewsSection from './NewsCard';
 import ProductZone from './ProductCard';
 
-type Product = {
-  id: number;
-  webGoodNameVietNam: string;
-  webPriceVietNam: number;
-  image1: string;
-};
-
-type News = {
-  id: number;
-  title: string;
-  publishDate: string;
-  images?: { fileUrl: string }[];
-};
-
-type Category = {
-  id: number;
-  label: string;
-  icon?: string;
-  isProduct: boolean;
-  products?: Product[];
-  news?: News[];
-};
-
 type Props = {
   webCategories: any[];
 };
 
 export default function HomeClient({ webCategories }: Props) {
-  const [categories, setCategories] = useState(webCategories);
+  const [categories] = useState(webCategories);
 
   useEffect(() => {
-    console.log('Web Categories:', webCategories);
   }, []);
 
   function parseImageUrls(imageString: string): string[] {
-    console.log('Parsing image URLs:', imageString);
     try {
       const list = JSON.parse(imageString.replace(/\\\\/g, '/'));
       return list.map((img: any) => `${process.env.NEXT_PUBLIC_SERVER_URL_IMAGE}${img.FileName}`);

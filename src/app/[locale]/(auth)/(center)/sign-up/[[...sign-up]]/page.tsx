@@ -1,4 +1,3 @@
-// components/Register.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -39,14 +38,20 @@ export default function Register() {
   };
 
   return (
-    <div className="  ">
-      <div className="hidden sm:block  rounded-xl">
-        {/* Background video or image */}
-      </div>
-      <div className="flex items-center justify-center">
-        <form onSubmit={handleSubmit} className="w-full max-w-lg space-y-4 bg-white p-6 rounded-xl shadow">
-          <h2 className="text-2xl font-bold text-gray-800">Đăng ký tài khoản</h2>
+    <div>
+      {/* Background video or image */}
+      <div className="hidden sm:block rounded-xl"></div>
 
+      <div className="flex items-center justify-center">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-lg space-y-4 bg-white p-6 rounded-xl shadow"
+        >
+          <h2 className="text-2xl font-bold text-gray-800">
+            Đăng ký tài khoản
+          </h2>
+
+          {/* Nút đăng ký qua mạng xã hội */}
           <div className="flex gap-4">
             <button
               type="button"
@@ -60,7 +65,6 @@ export default function Register() {
               type="button"
               className="flex items-center gap-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
             >
-              {' '}
               Gmail
             </button>
           </div>
@@ -73,12 +77,18 @@ export default function Register() {
           </div>
 
           {errorMessage && (
-            <div className="rounded bg-red-100 p-2 text-sm text-red-700">{errorMessage}</div>
+            <div className="rounded bg-red-100 p-2 text-sm text-red-700">
+              {errorMessage}
+            </div>
           )}
 
+          {/* Số điện thoại */}
           <div>
-            <label className="block font-medium">Số điện thoại</label>
+            <label htmlFor="phone" className="block font-medium">
+              Số điện thoại
+            </label>
             <input
+              id="phone"
               type="text"
               value={phone}
               onChange={e => setPhone(e.target.value)}
@@ -87,9 +97,13 @@ export default function Register() {
             />
           </div>
 
+          {/* Họ và tên */}
           <div>
-            <label className="block font-medium">Họ và tên</label>
+            <label htmlFor="name" className="block font-medium">
+              Họ và tên
+            </label>
             <input
+              id="name"
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -98,9 +112,13 @@ export default function Register() {
             />
           </div>
 
+          {/* Mật khẩu */}
           <div>
-            <label className="block font-medium">Mật khẩu</label>
+            <label htmlFor="password" className="block font-medium">
+              Mật khẩu
+            </label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -109,9 +127,13 @@ export default function Register() {
             />
           </div>
 
+          {/* Xác nhận mật khẩu */}
           <div>
-            <label className="block font-medium">Xác nhận mật khẩu</label>
+            <label htmlFor="confirmPassword" className="block font-medium">
+              Xác nhận mật khẩu
+            </label>
             <input
+              id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
@@ -120,25 +142,31 @@ export default function Register() {
             />
           </div>
 
+          {/* Điều khoản */}
           <p className="text-sm text-gray-600">
             Bằng việc nhấn nút đăng ký, bạn đã đồng ý với
-            <a href="#" className="text-blue-600"> Điều khoản sử dụng</a>
+            {' '}
+            <span className="text-blue-600 underline">
+              Điều khoản sử dụng
+            </span>
             {' '}
             và
-            <a href="#" className="text-blue-600"> Chính sách bảo mật</a>
+            {' '}
+            <span className="text-blue-600 underline">
+              Chính sách bảo mật
+            </span>
             {' '}
             của
+            {' '}
             <strong className="text-blue-600">JWKJOB</strong>
+            .
           </p>
 
+          {/* Nút submit */}
           <button
             type="submit"
-            disabled={
-              !password
-              || !confirmPassword
-              || password !== confirmPassword
-            }
-            className="w-full rounded bg-green-600 px-4 py-3 text-white text-xl hover:bg-green-700"
+            disabled={!password || !confirmPassword || password !== confirmPassword}
+            className="w-full rounded bg-green-600 px-4 py-3 text-white text-xl hover:bg-green-700 disabled:opacity-50"
           >
             Đăng ký
           </button>

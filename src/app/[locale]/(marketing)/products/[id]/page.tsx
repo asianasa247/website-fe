@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ProductImages from '@/components/ProductImages';
 import ProductInfo from '@/components/ProductInfo';
-import dashboardService from '../../api/dashboard';
 import { getProductDetail } from '../../api/productService';
 
 const ProductDetailClient = () => {
@@ -30,8 +29,6 @@ const ProductDetailClient = () => {
 
         setProduct(res.data.good);
         setCategory(res.data.category);
-        const res1 = await dashboardService.getProductByCategory(res.data.category.code);
-        console.log('Related products:', res1.data);
       } catch (err) {
         console.error('Failed to fetch product detail:', err);
       } finally {

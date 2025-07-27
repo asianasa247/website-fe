@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import type { MenuItemModel } from './layout/header';
@@ -102,7 +103,6 @@ const Footer = () => {
         item.children = sortByNumberItem(item.children);
       }
     });
-    console.log('Sorted hierarchical menu:', sortedResult);
     // Return the sorted result
 
     return sortedResult;

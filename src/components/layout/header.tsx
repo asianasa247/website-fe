@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -137,9 +139,9 @@ export default function Header() {
         )}
 
         {/* Hamburger icon for mobile */}
-        <div className="md:hidden text-3xl" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+        <button type="button" className="md:hidden text-3xl" onClick={() => setShowMobileMenu(!showMobileMenu)}>
           {showMobileMenu ? <FiX /> : <FiMenu />}
-        </div>
+        </button>
 
         {/* Menu Desktop */}
         <nav className="hidden md:flex flex-1 ml-10">
@@ -186,9 +188,9 @@ export default function Header() {
           <div className="flex gap-3 items-center">
             <Link href="/sign-in" className="text-green-600 hover:text-green-800">Đăng nhập</Link>
             <Link href="/sign-up" className="text-green-600 hover:text-green-800">Đăng ký</Link>
-            <button className="text-xl hover:text-green-600">🤍</button>
-            <button className="text-xl hover:text-green-600">🛒</button>
-            <button className="border border-green-400 rounded px-3 py-1 ml-2 hover:bg-green-50">
+            <button type="button" className="text-xl hover:text-green-600">🤍</button>
+            <button type="button" className="text-xl hover:text-green-600">🛒</button>
+            <button type="button" className="border border-green-400 rounded px-3 py-1 ml-2 hover:bg-green-50">
               🇻🇳
               {' '}
               <span className="text-xs">▼</span>

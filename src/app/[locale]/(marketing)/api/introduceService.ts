@@ -9,7 +9,7 @@ export type IntroduceItem = {
   imageUrl?: string;
 };
 
-export const getIntroduceList = async (): Promise<any[]> => {
+export const getIntroduceList = async (): Promise<any> => {
   const response = await api.get(`/Introduce/list`);
   return response.data;
 };

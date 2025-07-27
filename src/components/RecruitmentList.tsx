@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // components/RecruitmentList.tsx
 'use client';
 
@@ -88,6 +89,7 @@ export default function RecruitmentList({
             const page = i + 1;
             return (
               <button
+                type="button"
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={`px-4 py-2 border rounded ${
