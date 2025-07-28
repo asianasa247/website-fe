@@ -28,7 +28,7 @@ export default function HomeClient({ webCategories }: Props) {
       {categories.map(cat => (
         <div
           key={cat.id}
-          className="  p-6 md:p-8 transition-all duration-300"
+          className="  md:p-8 transition-all duration-300"
         >
           {/* Header danh mục */}
           <div className="flex items-center justify-center mb-4">
