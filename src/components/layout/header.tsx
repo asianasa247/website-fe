@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 
 import authService from '@/app/[locale]/(marketing)/api/auth';
@@ -23,9 +24,8 @@ export default function Header() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://default-api-url.com';
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
-  const [showMore, setShowMore] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [companyIfo, setCompanyInfo] = useState<any>(null);
+  const [companyInfo, setCompanyInfo] = useState<any>(null);
   const [socials, setSocials] = useState<any[]>([]);
 
   useEffect(() => {
@@ -46,9 +46,9 @@ export default function Header() {
     const handleScroll = () => {
       const header = document.querySelector('header');
       if (window.scrollY > 50) {
-        header?.classList.add('shadow-lg');
+        header?.classList.add('shadow-md');
       } else {
-        header?.classList.remove('shadow-lg');
+        header?.classList.remove('shadow-md');
       }
     };
 
@@ -103,17 +103,36 @@ export default function Header() {
   }
 
   return (
-    <header className="relative">
-      {/* Top info bar */}
-      <div className="bg-primary text-primary text-sm w-full py-2 hidden md:block">
-        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1">
-          <div className="flex gap-6 items-center">
-            <span>{companyIfo?.phone}</span>
-            <span>{companyIfo?.email}</span>
-            <span>{companyIfo?.address}</span>
-            <span>{companyIfo?.websiteName}</span>
+    <header className="w-full bg-white relative">
+      {/* ✅ Top bar */}
+      <div className="bg-gray-50 border-b text-xs hidden md:block">
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
+          {/* Thông tin công ty */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="flex items-center gap-1">
+              <FaPhoneAlt className="text-green-600" />
+              {' '}
+              {companyInfo?.phone}
+            </span>
+            <span className="flex items-center gap-1">
+              <FaEnvelope className="text-green-600" />
+              {' '}
+              {companyInfo?.email}
+            </span>
+            <span className="flex items-center gap-1">
+              <FaMapMarkerAlt className="text-green-600" />
+              {' '}
+              {companyInfo?.address}
+            </span>
+            <span className="flex items-center gap-1">
+              <FaClock className="text-green-600" />
+              {' '}
+              07:30 - 19:00 Thứ Hai - Chủ nhật
+            </span>
           </div>
-          <div className="flex gap-2 items-center">
+
+          {/* Mạng xã hội */}
+          <div className="flex gap-2">
             {socials?.map((social: any) => (
               <a
                 key={social.id || social.title}
@@ -122,84 +141,90 @@ export default function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={`${url}/${social.fileUrl}`} alt={social.title} className="w-6 h-6" />
+                <img src={`${url}/${social.fileUrl}`} alt={social.title} className="w-5 h-5" />
               </a>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-10 py-4 border-b bg-white">
+      {/* ✅ Main nav bar */}
+      <div className="flex items-center justify-between px-4 md:px-10 py-3 border-b bg-white">
         {/* Logo */}
         {companyLogo && (
-          <div>
-            <Image src={companyLogo || '/logo'} alt="Logo" width={120} height={48} />
-          </div>
+          <Link href="/">
+            <img src={companyLogo} alt="Logo" width={60} height={60} />
+          </Link>
         )}
 
-        {/* Hamburger icon for mobile */}
+        {/* Hamburger cho mobile */}
         <button type="button" className="md:hidden text-3xl" onClick={() => setShowMobileMenu(!showMobileMenu)}>
           {showMobileMenu ? <FiX /> : <FiMenu />}
         </button>
 
         {/* Menu Desktop */}
-        <nav className="hidden md:flex flex-1 ml-10">
-          <ul className="flex gap-8 font-semibold relative">
+        <nav className="hidden md:flex flex-1 justify-center">
+          <ul className="flex gap-6 font-medium text-green-700">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer hover:text-green-600">
+              <li key={item.code} className="cursor-pointer hover:text-green-500 transition">
                 <Link href={item.typeMenu}>{item.name}</Link>
               </li>
             ))}
             {moreMenu.length > 0 && (
               <li
-                className="relative cursor-pointer hover:text-green-600 flex items-center gap-1"
-                onMouseEnter={() => setShowMore(true)}
-                onMouseLeave={() => setShowMore(false)}
+                className="relative cursor-pointer hover:text-green-500 flex items-center gap-1 group"
               >
                 Xem thêm
+                {' '}
                 <span className="text-xs">▼</span>
-                {showMore && (
-                  <ul className="absolute left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[160px] z-50">
-                    {moreMenu.map(item => (
-                      <li key={item.code} className="px-4 py-2 hover:bg-green-50">
-                        <Link href="/">{item.name}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul className="absolute left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[160px] hidden group-hover:block z-50">
+                  {moreMenu.map(item => (
+                    <li key={item.code} className="px-4 py-2 hover:bg-green-50">
+                      <Link href="/">{item.name}</Link>
+                    </li>
+                  ))}
+                </ul>
               </li>
             )}
           </ul>
         </nav>
 
         {/* Search + Actions (desktop only) */}
-        <div className="hidden md:flex items-center">
-          <form className="flex items-center border border-green-100 rounded-full px-4 py-1 mr-6">
+        <div className="hidden md:flex items-center gap-3">
+          {/* Search */}
+          <form className="flex items-center border border-green-400 rounded-full px-3 py-1">
             <input
               type="text"
-              placeholder="Tìm kiếm"
-              className="outline-none border-none bg-transparent px-2 py-1 text-green-700"
+              placeholder="Tìm kiếm..."
+              className="outline-none border-none bg-transparent px-2 text-green-700 w-[120px]"
             />
             <button type="submit" className="text-green-500 text-lg">
               <FiSearch />
             </button>
           </form>
-          <div className="flex gap-3 items-center">
-            <Link href="/sign-in" className="text-green-600 hover:text-green-800">Đăng nhập</Link>
-            <Link href="/sign-up" className="text-green-600 hover:text-green-800">Đăng ký</Link>
-            <button type="button" className="text-xl hover:text-green-600">🤍</button>
-            <button type="button" className="text-xl hover:text-green-600">🛒</button>
-            <button type="button" className="border border-green-400 rounded px-3 py-1 ml-2 hover:bg-green-50">
-              🇻🇳
-              {' '}
-              <span className="text-xs">▼</span>
-            </button>
-          </div>
+
+          {/* Buttons */}
+          <Link href="/sign-in" className="px-3 py-1 border border-green-400 rounded-full text-green-600 hover:bg-green-50">
+            Đăng nhập
+          </Link>
+          <Link href="/sign-up" className="px-3 py-1 border border-green-400 rounded-full text-green-600 hover:bg-green-50">
+            Đăng ký
+          </Link>
+          <button type="button" className="w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50">
+            🤍
+          </button>
+          <button type="button" className="w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50">
+            🛒
+          </button>
+          <button type="button" className="flex items-center gap-1 px-3 py-1 border border-green-400 rounded-md hover:bg-green-50">
+            🇻🇳
+            {' '}
+            <span className="text-xs">▼</span>
+          </button>
         </div>
       </div>
 
-      {/* Mobile menu overlay */}
+      {/* ✅ Mobile menu overlay */}
       {showMobileMenu && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50">
           <ul className="flex flex-col gap-2 p-4">
