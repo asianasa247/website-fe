@@ -79,7 +79,7 @@ export default function ProductZone({
 
       {/* Product Cards */}
       <div
-        className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] justify-center gap-4"
+        className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] justify-center gap-4"
       >
         {selectProducts?.map(product => (
           <div
