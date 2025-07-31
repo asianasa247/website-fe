@@ -105,7 +105,7 @@ export default function Header() {
   return (
     <header className="w-full bg-white relative">
       {/* ✅ Top bar */}
-      <div className="bg-gray-50 border-b text-xs hidden md:block">
+      <div className="bg-gray-50  text-xs hidden md:block py-2">
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
           {/* Thông tin công ty */}
           <div className="flex items-center gap-4 flex-wrap">
@@ -149,7 +149,7 @@ export default function Header() {
       </div>
 
       {/* ✅ Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-10 py-3 border-b bg-white">
+      <div className="flex items-center justify-between px-4 md:px-16 py-3  bg-white">
         {/* Logo */}
         {companyLogo && (
           <Link href="/">
@@ -163,7 +163,7 @@ export default function Header() {
         </button>
 
         {/* Menu Desktop */}
-        <nav className="hidden md:flex flex-1 justify-center">
+        <nav className="hidden md:flex flex-1  justify-start">
           <ul className="flex gap-6 font-medium text-green-700">
             {mainMenu.map(item => (
               <li key={item.code} className="cursor-pointer hover:text-green-500 transition">
