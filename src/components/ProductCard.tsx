@@ -45,7 +45,7 @@ export default function ProductZone({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 container mx-auto px-4 md:px-8 lg:px-16">
       {/* Banners */}
       {imageUrls?.length > 0 && (
         isSizeImage
@@ -79,14 +79,12 @@ export default function ProductZone({
 
       {/* Product Cards */}
       <div
-        className={`grid ${
-          selectProducts?.length === 1 ? '' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-        } gap-2`}
+        className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] justify-center gap-4"
       >
         {selectProducts?.map(product => (
           <div
             key={product.id}
-            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col"
+            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w-[300px] w-full mx-auto"
           >
             {/* Discount badge */}
             {product.discount && (
