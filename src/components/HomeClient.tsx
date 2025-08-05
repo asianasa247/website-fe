@@ -44,7 +44,6 @@ export default function HomeClient({ webCategories }: Props) {
               imageUrls={cat.imageUrls || []}
               isSizeImage={cat.isSizeImage || false}
               unit="VNĐ"
-              image={parseImageUrls(cat?.image)}
               isShowFavourite={true}
             />
           )}
