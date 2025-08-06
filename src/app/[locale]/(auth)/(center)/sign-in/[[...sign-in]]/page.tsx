@@ -34,14 +34,14 @@ export default function Login() {
 
     const data = await res.json();
     if (res.ok) {
-      router.push('/dashboard');
+      router.push('/');
     } else {
       setErrorMessage(data.message || 'Đăng nhập thất bại');
     }
   };
 
   const handleLoginSocial = async (provider: 'google' | 'facebook') => {
-    await signIn(provider, { callbackUrl: '/dashboard' });
+    await signIn(provider, { callbackUrl: '/' });
   };
   useEffect(() => {
     authService.getCompany().then((company) => {
