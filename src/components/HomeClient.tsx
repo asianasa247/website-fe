@@ -24,7 +24,7 @@ export default function HomeClient({ webCategories }: Props) {
   }
 
   return (
-    <div className="space-y-12 px-4 md:px-8 lg:px-16">
+    <div className="space-y-12 px-1 md:px-8 lg:px-16">
       {categories.map(cat => (
         <div
           key={cat.id}

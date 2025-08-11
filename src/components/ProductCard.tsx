@@ -45,7 +45,7 @@ export default function ProductZone({
   };
 
   return (
-    <div className="space-y-8 container mx-auto px-4 md:px-8 lg:px-16">
+    <div className="space-y-8 container mx-auto px-0 md:px-8 lg:px-16">
       {/* Banners */}
       {imageUrls?.length > 0 && (
         isSizeImage
