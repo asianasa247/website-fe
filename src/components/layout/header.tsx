@@ -4,11 +4,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 
 import authService from '@/app/[locale]/(marketing)/api/auth';
 import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
+import { useCart } from '@/context/cart-context';
+import { CartModal } from '../CartModal';
 
 export type MenuItemModel = {
   code: string;
@@ -27,7 +29,9 @@ export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [companyInfo, setCompanyInfo] = useState<any>(null);
   const [socials, setSocials] = useState<any[]>([]);
-
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { state: cartState } = useCart();
+  const totalItems = cartState.items.reduce((sum, item) => sum + item.quantity, 0);
   useEffect(() => {
     authService.getCompany().then((company) => {
       if (company) {
@@ -202,7 +206,18 @@ export default function Header() {
               <FiSearch />
             </button>
           </form>
-
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            className="relative w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50 transition-colors"
+          >
+            <FaShoppingCart className="text-green-600" />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
           {/* Buttons */}
           <Link href="/sign-in" className="px-3 py-1 border border-green-400 rounded-full text-green-600 hover:bg-green-50">
             Đăng nhập
@@ -222,8 +237,25 @@ export default function Header() {
             <span className="text-xs">▼</span>
           </button>
         </div>
+        <button
+          type="button"
+          onClick={() => setIsCartOpen(true)}
+          className="md:hidden fixed bottom-4 right-4 z-50 bg-green-600 text-white p-4 rounded-full shadow-lg"
+        >
+          <div className="relative">
+            <FaShoppingCart className="text-xl" />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </div>
+        </button>
       </div>
-
+      <CartModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+      />
       {/* ✅ Mobile menu overlay */}
       {showMobileMenu && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50">

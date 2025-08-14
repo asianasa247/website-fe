@@ -4,6 +4,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useCart } from '@/context/cart-context';
+import { Toast } from './Toast';
 
 type Product = {
   id: number;
@@ -43,7 +45,20 @@ export default function ProductZone({
     const discount = product.discount || 0;
     return price - (price * discount) / 100;
   };
-
+  const [showToast, setShowToast] = useState(false);
+  const { dispatch } = useCart();
+  const handleAddToCart = (product: Product) => {
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: {
+        id: product.id.toString(),
+        name: product.webGoodNameVietNam || '',
+        price: getDiscountedPrice(product),
+        quantity: 1,
+        image: process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + product.image1,
+      },
+    });
+  };
   return (
     <div className="space-y-8 container mx-auto px-0 md:px-8 lg:px-16">
       {/* Banners */}
@@ -155,13 +170,14 @@ export default function ProductZone({
               {/* Button đẹp trên mobile */}
               <button
                 type="button"
+                onClick={() => handleAddToCart(product)}
                 className="mt-4 w-full flex items-center justify-center gap-2
-                  bg-gradient-to-r from-orange-500 to-red-500
-                  hover:from-orange-600 hover:to-red-600
-                  active:scale-95
-                  text-white text-sm font-medium
-                  py-3 rounded-full
-                  transition-all shadow-md"
+      bg-gradient-to-r from-orange-500 to-red-500
+      hover:from-orange-600 hover:to-red-600
+      active:scale-95
+      text-white text-sm font-medium
+      py-3 rounded-full
+      transition-all shadow-md"
               >
                 <i className="pi pi-shopping-cart text-base" />
                 <span>Thêm vào giỏ hàng</span>
@@ -182,6 +198,12 @@ export default function ProductZone({
             Xem thêm
           </button>
         </div>
+      )}
+      {showToast && (
+        <Toast
+          message="Đã thêm sản phẩm vào giỏ hàng"
+          onClose={() => setShowToast(false)}
+        />
       )}
     </div>
   );

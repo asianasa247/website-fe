@@ -1,21 +1,17 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-// app/checkout/page.tsx
 'use client';
 
-import React, { useMemo, useState } from 'react';
-
-type CartItem = { id: number; name: string; qty: number; price: number };
-
-const sampleCart: CartItem[] = [
-  { id: 1, name: 'Tour A', qty: 1, price: 1_200_000 },
-  { id: 2, name: 'Tour B', qty: 2, price: 450_000 },
-];
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useCart } from '@/context/cart-context';
 
 function formatVND(n: number) {
-  return `${n.toLocaleString('vi-VN')} ₫`;
+  return `${n.toLocaleString('vi-VN')}đ`;
 }
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { state: cart } = useCart();
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -26,7 +22,14 @@ export default function CheckoutPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  const subtotal = useMemo(() => sampleCart.reduce((s, i) => s + i.price * i.qty, 0), []);
+  // Redirect if cart is empty
+  React.useEffect(() => {
+    if (cart.items.length === 0) {
+      router.push('/');
+    }
+  }, [cart.items.length, router]);
+
+  const subtotal = cart.total;
   const shippingFee = subtotal > 2_000_000 ? 0 : 30_000;
   const total = subtotal + shippingFee;
 
@@ -35,133 +38,162 @@ export default function CheckoutPage() {
     setForm(p => ({ ...p, [name]: value }));
   }
 
-  function onPay() {
+  async function onPay() {
     if (!form.name || !form.phone || !form.address) {
       return;
     }
+
     setLoading(true);
-    // demo: simulate API
-    setTimeout(() => {
+    try {
+      // TODO: Implement your payment API here
+      // const order = {
+      //   items: cart.items,
+      //   total,
+      //   shippingFee,
+      //   shipping: {
+      //     name: form.name,
+      //     phone: form.phone,
+      //     address: form.address,
+      //     city: form.city,
+      //     note: form.note,
+      //   },
+      //   payment: form.payment,
+      // };
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // TODO: Handle successful payment
+      router.push('/checkout/success');
+    } catch (error) {
+      console.error('Payment failed:', error);
+    } finally {
       setLoading(false);
-    }, 1100);
+    }
   }
 
   return (
     <main className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        <header className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Thanh toán</h1>
-          <nav className="text-sm text-slate-500 hidden sm:block">Home / Giỏ hàng / Thanh toán</nav>
-        </header>
+        {/* ...existing header... */}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Form */}
+          {/* Form section stays the same */}
           <section className="md:col-span-2 bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-medium mb-4">Thông tin giao hàng</h2>
+            <section className="md:col-span-2 bg-white rounded-lg shadow p-6">
+              <h2 className="text-lg font-medium mb-4">Thông tin giao hàng</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="block">
-                <input
-                  name="name"
-                  value={form.name}
-                  onChange={onChange}
-                  placeholder="Họ và tên"
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
-                />
-              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="block">
+                  <input
+                    name="name"
+                    value={form.name}
+                    onChange={onChange}
+                    placeholder="Họ và tên"
+                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
+                  />
+                </label>
 
-              <label className="block">
-                <input
-                  name="phone"
-                  value={form.phone}
-                  onChange={onChange}
-                  placeholder="Số điện thoại"
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
-                />
-              </label>
+                <label className="block">
+                  <input
+                    name="phone"
+                    value={form.phone}
+                    onChange={onChange}
+                    placeholder="Số điện thoại"
+                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
+                  />
+                </label>
 
-              <label className="block sm:col-span-2">
-                <input
-                  name="city"
-                  value={form.city}
-                  onChange={onChange}
-                  placeholder="Tỉnh / Thành phố"
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
-                />
-              </label>
+                <label className="block sm:col-span-2">
+                  <input
+                    name="city"
+                    value={form.city}
+                    onChange={onChange}
+                    placeholder="Tỉnh / Thành phố"
+                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
+                  />
+                </label>
 
-              <label className="block sm:col-span-2">
-                <input
-                  name="address"
-                  value={form.address}
-                  onChange={onChange}
-                  placeholder="Địa chỉ cụ thể (số nhà, đường, phường)"
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
-                />
-              </label>
+                <label className="block sm:col-span-2">
+                  <input
+                    name="address"
+                    value={form.address}
+                    onChange={onChange}
+                    placeholder="Địa chỉ cụ thể (số nhà, đường, phường)"
+                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
+                  />
+                </label>
 
-              <label className="block sm:col-span-2">
-                <textarea
-                  name="note"
-                  value={form.note}
-                  onChange={onChange}
-                  placeholder="Ghi chú (không bắt buộc)"
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
-                  rows={3}
-                />
-              </label>
-            </div>
-
-            <hr className="my-6" />
-
-            <h3 className="text-lg font-medium mb-3">Phương thức thanh toán</h3>
-            <div className="flex flex-col gap-2">
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="card"
-                  checked={form.payment === 'card'}
-                  onChange={() => setForm(p => ({ ...p, payment: 'card' }))}
-                />
-                <span className="ml-2">Thẻ / Gateway</span>
-              </label>
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cod"
-                  checked={form.payment === 'cod'}
-                  onChange={() => setForm(p => ({ ...p, payment: 'cod' }))}
-                />
-                <span className="ml-2">Thanh toán khi nhận hàng (COD)</span>
-              </label>
-            </div>
-
-            <div className="mt-6">
-              <label className="text-sm text-slate-600 block">Mã giảm giá</label>
-              <div className="flex gap-2 mt-2">
-                <input className="flex-1 p-2 border rounded-md" placeholder="Nhập mã giảm giá" />
-                <button type="button" className="px-4 py-2 bg-indigo-600 text-white rounded-md">Áp dụng</button>
+                <label className="block sm:col-span-2">
+                  <textarea
+                    name="note"
+                    value={form.note}
+                    onChange={onChange}
+                    placeholder="Ghi chú (không bắt buộc)"
+                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-indigo-200"
+                    rows={3}
+                  />
+                </label>
               </div>
-            </div>
+
+              <hr className="my-6" />
+
+              <h3 className="text-lg font-medium mb-3">Phương thức thanh toán</h3>
+              <div className="flex flex-col gap-2">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="card"
+                    checked={form.payment === 'card'}
+                    onChange={() => setForm(p => ({ ...p, payment: 'card' }))}
+                  />
+                  <span className="ml-2">Thẻ / Gateway</span>
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="cod"
+                    checked={form.payment === 'cod'}
+                    onChange={() => setForm(p => ({ ...p, payment: 'cod' }))}
+                  />
+                  <span className="ml-2">Thanh toán khi nhận hàng (COD)</span>
+                </label>
+              </div>
+
+              <div className="mt-6">
+                <label className="text-sm text-slate-600 block">Mã giảm giá</label>
+                <div className="flex gap-2 mt-2">
+                  <input className="flex-1 p-2 border rounded-md" placeholder="Nhập mã giảm giá" />
+                  <button type="button" className="px-4 py-2 bg-indigo-600 text-white rounded-md">Áp dụng</button>
+                </div>
+              </div>
+            </section>
           </section>
 
-          {/* Summary */}
+          {/* Updated Cart Summary */}
           <aside className="bg-white rounded-lg shadow p-6 md:sticky md:top-6">
             <h3 className="text-lg font-medium mb-3">Tóm tắt đơn hàng</h3>
 
             <div className="space-y-3">
-              {sampleCart.map(it => (
-                <div key={it.id} className="flex justify-between text-sm">
+              {cart.items.map(item => (
+                <div key={item.id} className="flex justify-between text-sm">
                   <div>
-                    <div className="font-medium">{it.name}</div>
+                    <div className="font-medium">{item.name}</div>
                     <div className="text-slate-500">
                       Số lượng:
-                      {it.qty}
+                      {' '}
+                      {item.quantity}
+                      {' '}
+                      x
+                      {' '}
+                      {formatVND(item.price)}
                     </div>
                   </div>
-                  <div className="font-semibold">{formatVND(it.price * it.qty)}</div>
+                  <div className="font-semibold">
+                    {formatVND(item.price * item.quantity)}
+                  </div>
                 </div>
               ))}
             </div>
@@ -184,14 +216,16 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={onPay}
-              disabled={loading}
-              className="w-full mt-5 py-3 bg-indigo-600 text-white font-medium rounded-md shadow hover:opacity-95 disabled:opacity-60"
+              disabled={loading || cart.items.length === 0}
+              className="w-full mt-5 py-3 bg-green-600 text-white font-medium rounded-md
+                shadow hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed
+                transition-colors duration-200"
             >
               {loading ? 'Đang xử lý...' : 'Thanh toán'}
             </button>
 
-            <p className="text-xs text-slate-500 mt-3">
-              Bảo mật & mã hóa thông tin thanh toán — demo.
+            <p className="text-xs text-slate-500 mt-3 text-center">
+              Bảo mật & mã hóa thông tin thanh toán
             </p>
           </aside>
         </div>
