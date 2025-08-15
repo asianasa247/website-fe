@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/context/theme-provider';
 import NewsSection from './NewsCard';
 import ProductZone from './ProductCard';
 
@@ -10,7 +11,7 @@ type Props = {
 
 export default function HomeClient({ webCategories }: Props) {
   const [categories] = useState(webCategories);
-
+  const theme = useTheme();
   useEffect(() => {
   }, []);
 
@@ -31,8 +32,8 @@ export default function HomeClient({ webCategories }: Props) {
           className="  md:p-8 transition-all duration-300"
         >
           {/* Header danh mục */}
-          <div className="flex items-center justify-center mb-4">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+          <div className="flex items-center justify-center mb-4" style={{ color: theme.textColor }}>
+            <h2 className="text-xl md:text-2xl font-bold ">
               {cat.label}
             </h2>
           </div>

@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useCart } from '@/context/cart-context';
+import { useTheme } from '@/context/theme-provider';
 import { Toast } from './Toast';
 
 type Product = {
@@ -37,7 +38,7 @@ export default function ProductZone({
   const [page, setPage] = useState(1);
   const rows = 4;
   const selectProducts = products?.slice(0, page * rows);
-
+  const theme = useTheme();
   const formatCurrency = (money: number) => money.toLocaleString('vi-VN');
 
   const getDiscountedPrice = (product: Product) => {
@@ -136,12 +137,12 @@ export default function ProductZone({
             {/* Info */}
             <div className="flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="font-semibold text-sm text-gray-800 line-clamp-2 mb-1 hover:text-orange-500 transition">
+                <h3 className="font-semibold text-sm  line-clamp-2 mb-1  transition" style={{ color: theme.textColor }}>
                   <Link href={`/products/${product.id}`}>
                     {product.webGoodNameVietNam}
                   </Link>
                 </h3>
-                <p className="text-xs text-gray-500 line-clamp-1">
+                <p className="text-xs  line-clamp-1" style={{ color: theme.textColorSecondary }}>
                   {product.detail2 || product.detail1}
                 </p>
                 {product.titleVietNam && (
@@ -153,13 +154,13 @@ export default function ProductZone({
 
               {/* Giá */}
               <div className="mt-3 space-y-1">
-                <div className="text-base font-bold text-orange-600">
+                <div className="text-base font-bold " style={{ color: theme.textColor }}>
                   {formatCurrency(getDiscountedPrice(product))}
                   {' '}
                   {unit}
                 </div>
                 {product.discount && (
-                  <div className="text-xs text-gray-400 line-through">
+                  <div className="text-xs  line-through" style={{ color: theme.textColor }}>
                     {formatCurrency(product.webPriceVietNam || 0)}
                     {' '}
                     {unit}
@@ -172,12 +173,13 @@ export default function ProductZone({
                 type="button"
                 onClick={() => handleAddToCart(product)}
                 className="mt-4 w-full flex items-center justify-center gap-2
-      bg-gradient-to-r from-orange-500 to-red-500
-      hover:from-orange-600 hover:to-red-600
+      bg-gradient-to-r
+
       active:scale-95
-      text-white text-sm font-medium
+    text-sm font-medium
       py-3 rounded-full
       transition-all shadow-md"
+                style={{ color: theme.textColor, border: theme.primaryColor }}
               >
                 <i className="pi pi-shopping-cart text-base" />
                 <span>Thêm vào giỏ hàng</span>

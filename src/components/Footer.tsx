@@ -7,8 +7,10 @@ import React, { useEffect, useState } from 'react';
 import authService from '@/app/[locale]/(marketing)/api/auth';
 import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { getIntroduceList } from '@/app/[locale]/(marketing)/api/introduceService';
+import { useTheme } from '@/context/theme-provider';
 
 const Footer = () => {
+  const theme = useTheme();
   const [webCategories, setWebCategories] = useState<any[]>([]);
   const [companyInfo, setCompanyInfo] = useState<any>();
   const [aboutList, setAboutList] = useState<any[]>([]);
@@ -116,7 +118,7 @@ const Footer = () => {
     <div className="footer-wrapper bg-gray-100 text-gray-800 mt-10 px-6 py-10">
 
       {/* Danh mục chuyên mục */}
-      <div className="category-list flex flex-wrap gap-4 justify-center mb-6">
+      <div className="category-list flex flex-wrap gap-4 justify-center mb-6" style={{ color: theme.invalidPrimaryColor }}>
         {webCategories.map(item => (
           <div key={item.code} className="category-item flex items-center gap-2">
             <a href={`#${item.code}`} className="flex items-center gap-2 hover:underline">
@@ -128,7 +130,7 @@ const Footer = () => {
       </div>
 
       {/* Footer columns */}
-      <div className="footer-columns grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+      <div className="footer-columns grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm" style={{ color: theme.textColorSecondary }}>
         {/* Cột 1 */}
         <div className="footer-col">
           <h5 className="font-semibold mb-2 text-base">{companyInfo?.name}</h5>

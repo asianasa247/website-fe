@@ -10,6 +10,7 @@ import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 import authService from '@/app/[locale]/(marketing)/api/auth';
 import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { useCart } from '@/context/cart-context';
+import { useTheme } from '@/context/theme-provider';
 import { CartModal } from '../CartModal';
 
 export type MenuItemModel = {
@@ -24,6 +25,7 @@ export type MenuItemModel = {
 
 export default function Header() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://default-api-url.com';
+  const theme = useTheme();
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -37,6 +39,7 @@ export default function Header() {
       if (company) {
         setCompanyInfo(company.data);
         setCompanyLogo(`${url}/${company.data.fileLogo}`);
+        localStorage.setItem('defautlThemeweb', company.data.defautlThemeweb);
       }
     });
 
@@ -114,22 +117,22 @@ export default function Header() {
           {/* Thông tin công ty */}
           <div className="flex items-center gap-4 flex-wrap">
             <span className="flex items-center gap-1">
-              <FaPhoneAlt className="text-green-600" />
+              <FaPhoneAlt className="" />
               {' '}
               {companyInfo?.phone}
             </span>
             <span className="flex items-center gap-1">
-              <FaEnvelope className="text-green-600" />
+              <FaEnvelope className="" />
               {' '}
               {companyInfo?.email}
             </span>
             <span className="flex items-center gap-1">
-              <FaMapMarkerAlt className="text-green-600" />
+              <FaMapMarkerAlt className="" />
               {' '}
               {companyInfo?.address}
             </span>
             <span className="flex items-center gap-1">
-              <FaClock className="text-green-600" />
+              <FaClock className="" />
               {' '}
               07:30 - 19:00 Thứ Hai - Chủ nhật
             </span>
@@ -153,7 +156,7 @@ export default function Header() {
       </div>
 
       {/* ✅ Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-16 py-3  bg-white">
+      <div className="flex items-center justify-between px-4 md:px-16 py-3  " style={{ backgroundColor: theme.primaryColor }}>
         {/* Logo */}
         {companyLogo && (
           <Link href="/">
@@ -167,16 +170,16 @@ export default function Header() {
         </button>
 
         {/* Menu Desktop */}
-        <nav className="hidden md:flex flex-1  justify-start">
-          <ul className="flex gap-6 font-medium text-green-700">
+        <nav className="hidden md:flex flex-1  justify-start" style={{ color: theme.textColor }}>
+          <ul className="flex gap-6 font-medium ">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer hover:text-green-500 transition">
+              <li key={item.code} className="cursor-pointer  transition">
                 <Link href={item.typeMenu}>{item.name}</Link>
               </li>
             ))}
             {moreMenu.length > 0 && (
               <li
-                className="relative cursor-pointer hover:text-green-500 flex items-center gap-1 group"
+                className="relative cursor-pointer  flex items-center gap-1 group"
               >
                 Xem thêm
                 {' '}
@@ -196,22 +199,24 @@ export default function Header() {
         {/* Search + Actions (desktop only) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Search */}
-          <form className="flex items-center border border-green-400 rounded-full px-3 py-1">
+          <form className="flex items-center border  rounded-full px-3 py-1" style={{ borderColor: theme.textColor }}>
             <input
               type="text"
               placeholder="Tìm kiếm..."
-              className="outline-none border-none bg-transparent px-2 text-green-700 w-[120px]"
+              className="outline-none border-none bg-transparent px-2 w-[120px]"
+              style={{ color: theme.textColor }}
             />
-            <button type="submit" className="text-green-500 text-lg">
+            <button type="submit" style={{ color: theme.textColor }} className=" text-lg">
               <FiSearch />
             </button>
           </form>
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="relative w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50 transition-colors"
+            style={{ borderColor: theme.textColor, color: theme.textColor }}
+            className="relative w-9 h-9 border   rounded-full flex items-center justify-center hover:bg-green-50 transition-colors"
           >
-            <FaShoppingCart className="text-green-600" />
+            <FaShoppingCart />
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 {totalItems}
@@ -219,19 +224,19 @@ export default function Header() {
             )}
           </button>
           {/* Buttons */}
-          <Link href="/sign-in" className="px-3 py-1 border border-green-400 rounded-full text-green-600 hover:bg-green-50">
+          <Link href="/sign-in" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             Đăng nhập
           </Link>
-          <Link href="/sign-up" className="px-3 py-1 border border-green-400 rounded-full text-green-600 hover:bg-green-50">
+          <Link href="/sign-up" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             Đăng ký
           </Link>
-          <button type="button" className="w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50">
+          <button type="button" className="w-9 h-9 border  rounded-full flex items-center justify-center hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             🤍
           </button>
-          <button type="button" className="w-9 h-9 border border-green-400 rounded-full flex items-center justify-center hover:bg-green-50">
+          <button type="button" className="w-9 h-9 border  rounded-full flex items-center justify-center hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             🛒
           </button>
-          <button type="button" className="flex items-center gap-1 px-3 py-1 border border-green-400 rounded-md hover:bg-green-50">
+          <button type="button" className="flex items-center gap-1 px-3 py-1 border  rounded-md hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             🇻🇳
             {' '}
             <span className="text-xs">▼</span>
@@ -240,7 +245,8 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setIsCartOpen(true)}
-          className="md:hidden fixed bottom-4 right-4 z-50 bg-green-600 text-white p-4 rounded-full shadow-lg"
+          style={{ borderColor: theme.textColor, color: theme.textColor }}
+          className="md:hidden fixed bottom-4 right-4 z-50  text-white p-4 rounded-full shadow-lg"
         >
           <div className="relative">
             <FaShoppingCart className="text-xl" />
