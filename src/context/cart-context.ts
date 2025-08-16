@@ -18,7 +18,8 @@ type CartState = {
 type CartAction
   = | { type: 'ADD_ITEM'; payload: CartItem }
     | { type: 'REMOVE_ITEM'; payload: string }
-    | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } };
+    | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+    | { type: 'CLEAR_CART' };
 
 const CartContext = createContext<{
   state: CartState;
@@ -74,6 +75,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         total: updatedTotal,
       };
     }
+    case 'CLEAR_CART':
+      return {
+        items: [],
+        total: 0,
+      };
+
     default:
       return state;
   }
