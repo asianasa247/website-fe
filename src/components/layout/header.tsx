@@ -12,6 +12,7 @@ import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { useCart } from '@/context/cart-context';
 import { useTheme } from '@/context/theme-provider';
 import { CartModal } from '../CartModal';
+import ChatSupportButton from '../ChatSupportButton';
 import FloatingActions from '../FloatingActions';
 
 export type MenuItemModel = {
@@ -264,6 +265,11 @@ export default function Header() {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
       />
+      <div className="fixed right-4 bottom-28 md:bottom-24 md:right-6 z-[10000000] pointer-events-none">
+        <div className="pointer-events-auto">
+          <ChatSupportButton />
+        </div>
+      </div>
       {/* ✅ Mobile menu overlay */}
       {showMobileMenu && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50">
