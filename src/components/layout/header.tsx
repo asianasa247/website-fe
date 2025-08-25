@@ -12,6 +12,7 @@ import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { useCart } from '@/context/cart-context';
 import { useTheme } from '@/context/theme-provider';
 import { CartModal } from '../CartModal';
+import FloatingActions from '../FloatingActions';
 
 export type MenuItemModel = {
   code: string;
@@ -112,6 +113,7 @@ export default function Header() {
   return (
     <header className="w-full bg-white relative">
       {/* ✅ Top bar */}
+      <FloatingActions />
       <div className="bg-gray-50  text-xs hidden md:block py-2">
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
           {/* Thông tin công ty */}
