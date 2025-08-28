@@ -21,7 +21,6 @@ const Footer = () => {
   const [note, setNote] = useState('');
 
   useEffect(() => {
-    console.log('Theme in Footer:', theme);
     authService.getCompany().then((company) => {
       if (company) {
         setCompanyInfo(company.data);
