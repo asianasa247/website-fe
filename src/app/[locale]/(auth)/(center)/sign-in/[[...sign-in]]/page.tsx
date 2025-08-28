@@ -1,60 +1,131 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-// components/Login.tsx
 'use client';
 
-import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import authService from '@/app/[locale]/(marketing)/api/auth';
 
+type CompanyInfo = {
+  name?: string;
+  fileLogo?: string;
+  [key: string]: any;
+};
+
+type LoginOkResponse = {
+  Id: number;
+  Username: string;
+  Fullname: string;
+  Avatar: string | null;
+  Token: string;
+  Email: string | null;
+  Phone: string;
+};
+
+// Mềm hoá kiểu của authService để không lỗi khi gọi các helper nếu có
+type AuthServiceLike = typeof authService & {
+  setToken?: (t: string) => void;
+  setUser?: (u: any) => void;
+  initAuthenticated?: () => void;
+  userInfo?: any;
+};
+const auth = authService as AuthServiceLike;
+
+// Chuẩn hoá dữ liệu trả về từ BE thành LoginOkResponse
+function normalizeLoginResponse(raw: any): LoginOkResponse {
+  return {
+    Id: Number(raw?.Id ?? raw?.id ?? 0),
+    Username:
+      String(raw?.Username ?? raw?.username ?? raw?.Code ?? raw?.code ?? '',
+      ),
+    Fullname: String(raw?.Fullname ?? raw?.fullname ?? raw?.Name ?? raw?.name ?? ''),
+    Avatar: (raw?.Avatar ?? raw?.avatar ?? null) as string | null,
+    Token: String(raw?.Token ?? raw?.token ?? raw?.AccessToken ?? raw?.accessToken ?? ''),
+    Email: (raw?.Email ?? raw?.email ?? null) as string | null,
+    Phone: String(raw?.Phone ?? raw?.phone ?? raw?.PhoneNumber ?? raw?.phoneNumber ?? ''),
+  };
+}
+
 export default function Login() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://default-api-url.com';
-  const [companyInfo, setCompanyInfo] = useState<any>(null);
+
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ phoneNumber, password, rememberMe }),
-    });
+    try {
+      // Gọi đúng chữ ký: login(phone, password)
+      const raw = await authService.login(phoneNumber.trim(), password);
+      const res = normalizeLoginResponse(raw);
 
-    const data = await res.json();
-    if (res.ok) {
+      // Lưu token + user (nếu app có các helper tương ứng)
+      auth.setToken?.(res.Token);
+
+      const normalizedUser = {
+        id: res.Id,
+        code: res.Username,
+        name: res.Fullname,
+        avatar: res.Avatar,
+        email: res.Email,
+        phone: res.Phone,
+      };
+
+      auth.setUser?.(normalizedUser);
+      auth.userInfo = normalizedUser;
+      auth.initAuthenticated?.();
+
+      if (rememberMe) {
+        localStorage.setItem('remember_me', '1');
+      } else {
+        localStorage.removeItem('remember_me');
+      }
+
       router.push('/');
-    } else {
-      setErrorMessage(data.message || 'Đăng nhập thất bại');
+    } catch (err: unknown) {
+      const e = err as any;
+      const msg = e?.response?.data?.msg || e?.response?.data?.message || e?.message || 'Đăng nhập thất bại';
+      setErrorMessage(msg);
     }
   };
 
+  // Nếu sau này lấy token từ SDK Google/Facebook, sẽ gọi:
+  // await authService.loginSocial('GOOGLE' | 'FACEBOOK', accessToken)
   const handleLoginSocial = async (provider: 'google' | 'facebook') => {
-    await signIn(provider, { callbackUrl: '/' });
+    setErrorMessage(
+      `Cần access token từ SDK để gọi /WebAuth/login-social. Provider: ${provider}`,
+    );
   };
+
   useEffect(() => {
-    authService.getCompany().then((company) => {
-      if (company) {
-        setCompanyInfo(company.data);
-        setCompanyLogo(`${url}/${company.data.fileLogo}`);
-      } else {
-        console.warn('No company data found');
-      }
-    });
-  }, []);
+    authService
+      .getCompany()
+      .then((company: any) => {
+        const payload = company?.data ?? company;
+        if (payload) {
+          setCompanyInfo(payload);
+          if (payload.fileLogo) {
+            setCompanyLogo(`${url}/${payload.fileLogo}`);
+          }
+        }
+      })
+      .catch(() => {
+        // không cần hiển thị lỗi ở đây
+      });
+  }, [url]);
+
   return (
-    <div className="pb-10 pt-12 px-4 flex items-center justify-center ">
+    <div className="pb-10 pt-12 px-4 flex items-center justify-center">
       <div className="w-full max-w-4xl rounded-[56px] bg-gradient-to-b from-blue-500/90 to-transparent p-[0.3rem]">
         <div className="rounded-[53px] bg-gradient-to-b from-gray-100 to-white p-6">
           <div className="text-center mb-6">
@@ -114,7 +185,6 @@ export default function Login() {
                 <Link href="/forgot-password" className="text-blue-500 text-sm">
                   Quên mật khẩu?
                 </Link>
-
               </div>
 
               <button

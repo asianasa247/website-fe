@@ -49,8 +49,8 @@ export default function CheckoutPage() {
       try {
         const data = await addressApi.getProvinces();
         setProvinces(data.data);
-      } catch (error) {
-        console.error('Failed to load provinces:', error);
+      } catch (err) {
+        console.error('Failed to load provinces:', err);
         setError('Không thể tải danh sách tỉnh/thành phố');
       }
     };
@@ -68,8 +68,8 @@ export default function CheckoutPage() {
         const data = await addressApi.getDistricts(form.provinceId);
         setDistricts(data.data);
         setForm(prev => ({ ...prev, districtId: '', wardId: '' }));
-      } catch (error) {
-        console.error('Failed to load districts:', error);
+      } catch (err) {
+        console.error('Failed to load districts:', err);
       }
     };
     loadDistricts();
@@ -86,8 +86,8 @@ export default function CheckoutPage() {
         const data = await addressApi.getWards(form.districtId);
         setWards(data.data);
         setForm(prev => ({ ...prev, wardId: '' }));
-      } catch (error) {
-        console.error('Failed to load wards:', error);
+      } catch (err) {
+        console.error('Failed to load wards:', err);
       }
     };
     loadWards();
@@ -116,7 +116,6 @@ export default function CheckoutPage() {
       districts.find(d => d.id === form.districtId)?.name,
       provinces.find(p => p.id === form.provinceId)?.name,
     ].filter(Boolean);
-
     return parts.join(', ');
   }
 
@@ -150,7 +149,7 @@ export default function CheckoutPage() {
         paymentAt: new Date().toISOString(),
         fromAt: new Date().toISOString(),
         toAt: new Date().toISOString(),
-        email: form.email || 'guest@example.com',
+        email: form.email?.trim() || undefined, // <- đổi ở đây
         phoneNumber: form.phone,
         paymentMethod: form.payment,
         shippingAddress: buildShippingAddress(),
@@ -164,15 +163,18 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: item.price,
         })),
-      };
-
+      } as const;
       await createOrder(orderData);
+
       dispatch({ type: 'CLEAR_CART' });
       setShowToast(true);
       router.push('/checkout/success');
-    } catch (error) {
-      console.error('Payment failed:', error);
-      setError('Đặt hàng thất bại. Vui lòng thử lại.');
+    } catch (err: unknown) {
+      const e = err as any;
+      const serverMsg = e?.response?.data?.msg || e?.response?.data?.message;
+
+      console.error('Payment failed:', e?.response ?? e);
+      setError(serverMsg || 'Đặt hàng thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -398,9 +400,7 @@ export default function CheckoutPage() {
                       <span>Đang xử lý...</span>
                     </>
                   )
-                : (
-                    'Đặt hàng'
-                  )}
+                : 'Đặt hàng'}
             </button>
 
             <p className="text-xs text-gray-500 mt-4 text-center">

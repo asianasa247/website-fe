@@ -1,137 +1,199 @@
-import { BehaviorSubject } from 'rxjs';
 import api from './api';
 
-const STORAGE_KEYS = {
-  USER: 'currentUser',
-  SESSION: 'session',
-  INFO: 'info',
+// ===== Types gọn, không phá chỗ khác =====
+export type LoginResponse = {
+  id: number | string;
+  username: string;
+  fullname: string;
+  avatar?: string | null;
+  token: string;
+  email?: string | null;
+  phone?: string | null;
 };
 
-class AuthService {
-  _userInfo = new BehaviorSubject<any | null>(null);
-  initialAuthenticated = new BehaviorSubject('Initial Authenticated');
+export type ObjectReturn<T> = { status: number; data: T };
 
-  constructor() {
-    if (typeof window !== 'undefined') {
-      const user = localStorage.getItem(STORAGE_KEYS.USER);
-      this.userInfo = user ? JSON.parse(user) : null;
-    }
+export type RegisterResult = {
+  id: number | string;
+  code: string;
+  name: string;
+  avatar?: string | null;
+  phone: string;
+  token?: string;
+};
+
+// Khớp BE: WebCustomerV2Model (đăng ký / update-email)
+export type WebCustomerV2Model = {
+  Id?: number;
+  Phone: string;
+  Password: string;
+  Name: string;
+  Email?: string;
+  Address?: string;
+  ProvinceId?: number | null;
+  DistrictId?: number | null;
+  WardId?: number | null;
+  Gender?: number | null;
+  Birthday?: string | null; // ISO 8601
+  Avatar?: string | null;
+  [key: string]: unknown;
+};
+
+// Khớp BE: WebCustomerUpdateModel (update info)
+export type WebCustomerUpdateModel = {
+  Id: number;
+  Name?: string | null;
+  Email?: string | null;
+  Phone?: string | null;
+  Avatar?: string | null;
+  Address?: string | null;
+  ProvinceId?: number | null;
+  DistrictId?: number | null;
+  WardId?: number | null;
+  Gender?: number | null;
+  Birthday?: string | null; // ISO
+  [key: string]: unknown;
+};
+
+export type CompanyInfo = Record<string, unknown>;
+
+// ===== Helpers =====
+function saveToken(token?: string | null) {
+  if (typeof window === 'undefined') {
+    return;
   }
-
-  get userInfo() {
-    return this._userInfo.value;
-  }
-
-  set userInfo(value: any | null) {
-    this._userInfo.next(value);
-  }
-
-  get user() {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-    const user = localStorage.getItem(STORAGE_KEYS.USER);
-    return user ? JSON.parse(user) : null;
-  }
-
-  get token() {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-    return localStorage.getItem(STORAGE_KEYS.SESSION);
-  }
-
-  setToken(token: string) {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.SESSION, token);
-    }
-  }
-
-  deleteToken() {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEYS.USER);
-      localStorage.removeItem(STORAGE_KEYS.INFO);
-      localStorage.removeItem(STORAGE_KEYS.SESSION);
-    }
-  }
-
-  clearSession() {
-    this.deleteToken();
-    if (typeof window !== 'undefined') {
-      localStorage.clear();
-    }
-  }
-
-  setUser(authUser: any) {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(authUser));
-    }
-  }
-
-  deleteUser() {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEYS.USER);
-    }
-  }
-
-  async login(params: any) {
-    const res = await api.post('/auth/login-web', params);
-    return res.data;
-  }
-
-  async getAuthInfo(userId: string) {
-    const res = await api.get(`/auth/info/${userId}`);
-    return res.data;
-  }
-
-  async registUser(params: any) {
-    const res = await api.post('/WebAuth/register', params);
-    return res.data;
-  }
-
-  async changePassword(params: any) {
-    const res = await api.post('/auth/change-password', params);
-    return res.data;
-  }
-
-  async registEmployer(params: any) {
-    const res = await api.post('/auth/register-employer-web', params);
-    return res.data;
-  }
-
-  async resetPassword(params: any) {
-    const res = await api.post('/auth/requestForgotPass', params);
-    return res.data;
-  }
-
-  async uploadAvatar(params: any, userId: string) {
-    const res = await api.post(`/auth/${userId}/upload-avatar`, params);
-    return res.data;
-  }
-
-  initAuthenticated() {
-    this.initialAuthenticated.next('initial authenticated');
-  }
-
-  async getCompany() {
-    const res = await api.get('/Companies/get-company');
-    // Nếu muốn cập nhật vào một observable khác, bạn có thể thêm logic ở đây
-    return res.data;
-  }
-
-  async loadSocialConfig() {
-    try {
-      const res = await api.get('/Companies/get-company');
-      // Cập nhật vào biến toàn cục nếu cần
-      // AppConstant.SOCIAL.Facebook_Id = res.data.facebookAppId;
-      // AppConstant.SOCIAL.Google_Id = res.data.googleAppId;
-      return res.data;
-    } catch (error) {
-      console.warn('Failed to load social config from backend', error);
-      return null;
-    }
+  if (token && token.length > 0) {
+    localStorage.setItem('Token', token);
   }
 }
 
-const authService = new AuthService();
+function readTokenFromResponse(data: unknown): string | null {
+  // System.Text.Json serialize mặc định camelCase → cả token/Token đều có thể xuất hiện
+  const d = data as any;
+  return d?.token ?? d?.Token ?? null;
+}
+
+// ===== AUTH APIs (GIỮ NGUYÊN TÊN HÀM VÀ DEFAULT EXPORT) =====
+
+// POST /api/WebAuth/login  — body JSON { Username, Password }
+async function login(phone: string, password: string): Promise<LoginResponse> {
+  const payload = { Username: phone, Password: password };
+  const { data } = await api.post<LoginResponse>(
+    '/WebAuth/login',
+    payload,
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+  saveToken(readTokenFromResponse(data));
+  return data;
+}
+
+// POST /api/WebAuth/register — body JSON PascalCase (WebCustomerV2Model)
+async function register(form: Omit<WebCustomerV2Model, 'Id'>): Promise<ObjectReturn<RegisterResult>> {
+  const { data } = await api.post<ObjectReturn<RegisterResult>>(
+    '/WebAuth/register',
+    form,
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+  // BE trả về ObjectReturn { status, data: { ..., Token } }
+  // Nếu có Token, lưu để đăng nhập ngay sau khi đăng ký
+  const token
+
+    = ((data as any)?.data?.Token as string | undefined)
+      ?? readTokenFromResponse(data);
+  if (token) {
+    saveToken(token);
+  }
+  return data;
+}
+
+// POST /api/WebAuth/login-social — body JSON { Provider, Token }
+async function loginSocial(provider: 'FACEBOOK' | 'GOOGLE', providerToken: string) {
+  const payload = { Provider: provider, Token: providerToken };
+  const { data } = await api.post(
+    '/WebAuth/login-social',
+    payload,
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+  saveToken(readTokenFromResponse(data));
+  return data;
+}
+
+// POST /api/WebAuth/update-email — body JSON { Id, Email }
+async function updateEmail(model: Pick<WebCustomerV2Model, 'Id' | 'Email'>) {
+  const { data } = await api.post(
+    '/WebAuth/update-email',
+    model,
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+  return data;
+}
+
+// GET /api/WebAuth/info/{id} — cần Bearer token
+async function getInfo(id: number | string) {
+  const { data } = await api.get(`/WebAuth/info/${id}`);
+  return data;
+}
+
+// POST /api/WebAuth/info — body JSON WebCustomerUpdateModel
+async function updateInfo(model: WebCustomerUpdateModel) {
+  const { data } = await api.post(
+    '/WebAuth/info',
+    model,
+    { headers: { 'Content-Type': 'application/json' } },
+  );
+  return data;
+}
+
+// POST /api/WebAuth/change-pass-word/{id}?password=...  (BE lấy param password từ query)
+async function changePassword(id: number | string, password: string) {
+  const { data } = await api.post(`/WebAuth/change-pass-word/${id}?password=${encodeURIComponent(password)}`);
+  return data;
+}
+
+// (Giữ để không vỡ Header/Footer; nếu hệ thống không có, hàm này có thể không được gọi)
+async function getCompany(): Promise<CompanyInfo> {
+  const candidates = [
+    '/WebDashboard/getCompany',
+    '/WebCompany/getCompany',
+    '/WebCompany/get',
+    '/WebConfig/getCompany',
+    '/WebAuth/getCompany',
+    '/WebAuth/company',
+  ];
+  let lastErr: unknown = null;
+
+  for (const path of candidates) {
+    try {
+      const { data } = await api.get(path);
+      return data as CompanyInfo;
+    } catch (err) {
+      const st = (err as any)?.response?.status as number | undefined;
+      if (st && st !== 404) {
+        throw err;
+      }
+      lastErr = err;
+    }
+  }
+  throw lastErr ?? new Error('No company endpoint found');
+}
+
+function logout() {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('Token');
+  }
+}
+
+// ===== Default export GIỮ TÊN =====
+const authService = {
+  login,
+  register,
+  loginSocial,
+  updateEmail,
+  getInfo,
+  updateInfo,
+  changePassword,
+  getCompany,
+  logout,
+};
+
 export default authService;

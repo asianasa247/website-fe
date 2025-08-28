@@ -3,6 +3,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
@@ -25,32 +26,64 @@ export type MenuItemModel = {
   [key: string]: any;
 };
 
+type CompanyPayload = {
+  fileLogo?: string;
+  defautlThemeweb?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  [k: string]: any;
+};
+
 export default function Header() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://default-api-url.com';
   const theme = useTheme();
+  const router = useRouter();
+
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [companyInfo, setCompanyInfo] = useState<any>(null);
+  const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
   const [socials, setSocials] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const { state: cartState } = useCart();
   const totalItems = cartState.items.reduce((sum, item) => sum + item.quantity, 0);
+
   useEffect(() => {
-    authService.getCompany().then((company) => {
-      if (company) {
-        setCompanyInfo(company.data);
-        setCompanyLogo(`${url}/${company.data.fileLogo}`);
-        localStorage.setItem('defautlThemeweb', company.data.defautlThemeweb);
+    authService.getCompany().then((company: unknown) => {
+      const data = (company as any)?.data ?? (company as CompanyPayload);
+      if (data) {
+        const companyData = data as CompanyPayload;
+        setCompanyInfo(companyData);
+        if (companyData.fileLogo) {
+          setCompanyLogo(`${url}/${companyData.fileLogo}`);
+        }
+        if (typeof companyData.defautlThemeweb === 'string') {
+          localStorage.setItem('defautlThemeweb', companyData.defautlThemeweb);
+        }
       }
     });
 
-    dashboardService.getListWebCategory().then((res) => {
+    dashboardService.getListWebCategory().then((res: any) => {
       setMenu(transformToHierarchicalMenu(res.data));
     });
-    dashboardService.getSocials().then((res) => {
+
+    dashboardService.getSocials().then((res: any) => {
       setSocials(res);
     });
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('Token') : null;
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+    setIsLoggedIn(!!token);
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'Token') {
+        setIsLoggedIn(!!e.newValue);
+      }
+    };
+    window.addEventListener('storage', onStorage);
 
     const handleScroll = () => {
       const header = document.querySelector('header');
@@ -62,8 +95,29 @@ export default function Header() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('Token');
+      localStorage.removeItem('auth-state');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('session');
+
+      // dọn cache tiện ích nội bộ (nếu có)
+      (authService as any)?.setToken?.('');
+      (authService as any).userInfo = null;
+    } catch {
+      // noop
+    }
+    setIsLoggedIn(false);
+    setShowMobileMenu(false);
+    router.push('/sign-in');
+  };
 
   const mainMenu = menu.slice(0, 5);
   const moreMenu = menu.slice(5);
@@ -226,13 +280,31 @@ export default function Header() {
               </span>
             )}
           </button>
-          {/* Buttons */}
-          <Link href="/sign-in" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
-            Đăng nhập
-          </Link>
-          <Link href="/sign-up" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
-            Đăng ký
-          </Link>
+
+          {/* Auth Buttons */}
+          {!isLoggedIn
+            ? (
+                <>
+                  <Link href="/sign-in" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+                    Đăng nhập
+                  </Link>
+                  <Link href="/sign-up" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+                    Đăng ký
+                  </Link>
+                </>
+              )
+            : (
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="px-3 py-1 border  rounded-full hover:bg-green-50"
+                  style={{ borderColor: theme.textColor, color: theme.textColor }}
+                  title="Đăng xuất"
+                >
+                  Đăng xuất
+                </button>
+              )}
+
           <button type="button" className="w-9 h-9 border  rounded-full flex items-center justify-center hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
             🤍
           </button>
@@ -245,6 +317,8 @@ export default function Header() {
             <span className="text-xs">▼</span>
           </button>
         </div>
+
+        {/* Cart button mobile */}
         <button
           type="button"
           onClick={() => setIsCartOpen(true)}
@@ -261,15 +335,18 @@ export default function Header() {
           </div>
         </button>
       </div>
+
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
       />
+
       <div className="fixed right-4 bottom-28 md:bottom-24 md:right-6 z-[10000000] pointer-events-none">
         <div className="pointer-events-auto">
           <ChatSupportButton />
         </div>
       </div>
+
       {/* ✅ Mobile menu overlay */}
       {showMobileMenu && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50">
@@ -279,6 +356,34 @@ export default function Header() {
                 <Link href={item.typeMenu}>{item.name}</Link>
               </li>
             ))}
+
+            {/* Auth actions for mobile */}
+            {!isLoggedIn
+              ? (
+                  <>
+                    <li className="py-2">
+                      <Link href="/sign-in" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border">
+                        Đăng nhập
+                      </Link>
+                    </li>
+                    <li className="py-2">
+                      <Link href="/sign-up" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border">
+                        Đăng ký
+                      </Link>
+                    </li>
+                  </>
+                )
+              : (
+                  <li className="py-2">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full text-left px-2 py-2 rounded border"
+                    >
+                      Đăng xuất
+                    </button>
+                  </li>
+                )}
           </ul>
         </div>
       )}
