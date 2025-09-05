@@ -64,7 +64,7 @@ export default function Slider() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplaySpeed: 500,
+    autoplaySpeed: 3000,
     arrows: true,
   };
 

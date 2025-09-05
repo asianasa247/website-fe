@@ -169,26 +169,26 @@ export default function Header() {
     <header className="w-full bg-white relative">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="bg-gray-50  text-xs hidden md:block py-2">
+      <div className="bg-gray-50  text-xs hidden md:block py-2 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-4 flex-wrap font-bold">
+            <span className="flex items-center gap-1 font-bold">
               <FaPhoneAlt className="" />
               {' '}
               {companyInfo?.phone}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 font-bold">
               <FaEnvelope className="" />
               {' '}
               {companyInfo?.email}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 font-bold">
               <FaMapMarkerAlt className="" />
               {' '}
               {companyInfo?.address}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 font-bold">
               <FaClock className="" />
               {' '}
               07:30 - 19:00 Thứ Hai - Chủ nhật

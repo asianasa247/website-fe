@@ -115,7 +115,7 @@ const Footer = () => {
   };
 
   return (
-    <div className="footer-wrapper text-gray-800 mt-10 px-6 py-10" style={{ color: theme.textColorSecondary, backgroundColor: theme.lightPrimaryColor }}>
+    <div className="footer-wrapper text-gray-800 mt-10 px-6 py-10 font-bold" style={{ color: theme.textColorSecondary, backgroundColor: theme.lightPrimaryColor }}>
 
       {/* Danh mục chuyên mục */}
       <div className="category-list flex flex-wrap gap-4 justify-center mb-6" style={{ color: theme.textColorSecondary }}>
