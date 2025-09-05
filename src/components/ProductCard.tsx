@@ -128,7 +128,7 @@ export default function ProductZone({
                 <img
                   src={process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + product.image1}
                   alt={product.webGoodNameVietNam || 'product'}
-                  className="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
+                  className="w-full h-56 object-cover transform transition-transform duration-500 hover:scale-105"
                   onError={e => (e.currentTarget.src = '/images/no-image.png')}
                 />
               </div>
