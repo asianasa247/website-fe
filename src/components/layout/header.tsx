@@ -169,27 +169,27 @@ export default function Header() {
     <header className="w-full bg-white relative">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="bg-[#f5f2ff] text-[#6a60f6] text-sm hidden md:block">
-        <div className="w-full flex justify-between items-center px-6 py-2">
-          {/* Trái: dữ liệu cứng trải dài */}
-          <div className="flex items-center gap-6 flex-wrap">
-            <span className="flex items-center gap-2">
-              <FaPhoneAlt className="text-[#6a60f6]" />
+      <div className="bg-gray-50  text-xs hidden md:block py-2 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
+          {/* Thông tin công ty */}
+          <div className="flex items-center gap-4 flex-wrap font-bold">
+            <span className="flex items-center gap-1 font-bold">
+              <FaPhoneAlt className="" />
               {' '}
               0918 240 953 - 0901 254 598 - 0908799 090
             </span>
-            <span className="flex items-center gap-2">
-              <FaEnvelope className="text-[#6a60f6]" />
+            <span className="flex items-center gap-1 font-bold">
+              <FaEnvelope className="" />
               {' '}
               nguyenthanhquanvt81@gmail.com
             </span>
-            <span className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-[#6a60f6]" />
+            <span className="flex items-center gap-1 font-bold">
+              <FaMapMarkerAlt className="" />
               {' '}
               1816 ĐƯỜNG VÕ VĂN KIỆT, ẤP TÂY, HÒA LONG, TP BÀ RỊA, TỈNH BR-VT
             </span>
-            <span className="flex items-center gap-2">
-              <FaClock className="text-[#6a60f6]" />
+            <span className="flex items-center gap-1 font-bold">
+              <FaClock className="" />
               {' '}
               07:30 - 17:00 Thứ Hai - Thứ Bảy
             </span>
