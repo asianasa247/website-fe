@@ -43,8 +43,8 @@ export default function Header() {
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
-  const [socials, setSocials] = useState<any[]>([]);
+  // const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
+  // const [socials, setSocials] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -56,7 +56,7 @@ export default function Header() {
       const data = (company as any)?.data ?? (company as CompanyPayload);
       if (data) {
         const companyData = data as CompanyPayload;
-        setCompanyInfo(companyData);
+        // setCompanyInfo(companyData);
         if (companyData.fileLogo) {
           setCompanyLogo(`${url}/${companyData.fileLogo}`);
         }
@@ -70,9 +70,9 @@ export default function Header() {
       setMenu(transformToHierarchicalMenu(res.data));
     });
 
-    dashboardService.getSocials().then((res: any) => {
-      setSocials(res);
-    });
+    // dashboardService.getSocials().then((res: any) => {
+    //   // setSocials(res);
+    // });
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('Token') : null;
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
@@ -169,51 +169,66 @@ export default function Header() {
     <header className="w-full bg-white relative">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="bg-gray-50  text-xs hidden md:block py-2">
-        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
-          {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="flex items-center gap-1">
-              <FaPhoneAlt className="" />
+      <div className="bg-[#f5f2ff] text-[#6a60f6] text-sm hidden md:block">
+        <div className="w-full flex justify-between items-center px-6 py-2">
+          {/* Trái: dữ liệu cứng trải dài */}
+          <div className="flex items-center gap-6 flex-wrap">
+            <span className="flex items-center gap-2">
+              <FaPhoneAlt className="text-[#6a60f6]" />
               {' '}
-              {companyInfo?.phone}
+              0918 240 953 - 0901 254 598 - 0908799 090
             </span>
-            <span className="flex items-center gap-1">
-              <FaEnvelope className="" />
+            <span className="flex items-center gap-2">
+              <FaEnvelope className="text-[#6a60f6]" />
               {' '}
-              {companyInfo?.email}
+              nguyenthanhquanvt81@gmail.com
             </span>
-            <span className="flex items-center gap-1">
-              <FaMapMarkerAlt className="" />
+            <span className="flex items-center gap-2">
+              <FaMapMarkerAlt className="text-[#6a60f6]" />
               {' '}
-              {companyInfo?.address}
+              1816 ĐƯỜNG VÕ VĂN KIỆT, ẤP TÂY, HÒA LONG, TP BÀ RỊA, TỈNH BR-VT
             </span>
-            <span className="flex items-center gap-1">
-              <FaClock className="" />
+            <span className="flex items-center gap-2">
+              <FaClock className="text-[#6a60f6]" />
               {' '}
-              07:30 - 19:00 Thứ Hai - Chủ nhật
+              07:30 - 17:00 Thứ Hai - Thứ Bảy
             </span>
           </div>
 
-          {/* Mạng xã hội */}
-          <div className="flex gap-2">
-            {socials?.map((social: any) => (
-              <a
-                key={social.id || social.title}
-                href={social.shortContent}
-                title={social.title}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={`${url}/${social.fileUrl}`} alt={social.title} className="w-5 h-5" />
-              </a>
-            ))}
+          {/* Phải: icon mạng xã hội cố định */}
+          <div className="flex items-center gap-3 pr-1">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Facebook"
+              className="inline-flex"
+            >
+              <img
+                src="https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
+                alt="Facebook"
+                className="w-6 h-6"
+              />
+            </a>
+            <a
+              href="https://zalo.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Zalo"
+              className="inline-flex"
+            >
+              <img
+                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/Zalo.svg"
+                alt="Zalo"
+                className="w-6 h-6"
+              />
+            </a>
           </div>
         </div>
       </div>
 
       {/* ✅ Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-16 py-3  " style={{ backgroundColor: theme.primaryColor }}>
+      <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b border-[#ededed] bg-white">
         {/* Logo */}
         {companyLogo && (
           <Link href="/">
@@ -227,23 +242,23 @@ export default function Header() {
         </button>
 
         {/* Menu Desktop */}
-        <nav className="hidden md:flex flex-1  justify-start" style={{ color: theme.textColor }}>
-          <ul className="flex gap-6 font-medium ">
+        <nav className="hidden md:flex flex-1 justify-start">
+          <ul className="flex gap-6 font-medium text-[#343a40]">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer  transition">
+              <li key={item.code} className="cursor-pointer transition hover:text-[#e91e63]">
                 <Link href={item.typeMenu}>{item.name}</Link>
               </li>
             ))}
             {moreMenu.length > 0 && (
               <li
-                className="relative cursor-pointer  flex items-center gap-1 group"
+                className="relative cursor-pointer flex items-center gap-1 group text-[#343a40] hover:text-[#e91e63]"
               >
                 Xem thêm
                 {' '}
                 <span className="text-xs">▼</span>
                 <ul className="absolute left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[160px] hidden group-hover:block z-50">
                   {moreMenu.map(item => (
-                    <li key={item.code} className="px-4 py-2 hover:bg-green-50">
+                    <li key={item.code} className="px-4 py-2 hover:bg-[#fff1f4]">
                       <Link href="/">{item.name}</Link>
                     </li>
                   ))}
@@ -256,22 +271,20 @@ export default function Header() {
         {/* Search + Actions (desktop only) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Search */}
-          <form className="flex items-center border  rounded-full px-3 py-1" style={{ borderColor: theme.textColor }}>
+          <form className="flex items-center border rounded-full px-3 py-1 border-[#e91e63] focus-within:shadow-[0_0_0_2px_rgba(233,30,99,0.15)]">
             <input
               type="text"
-              placeholder="Tìm kiếm..."
-              className="outline-none border-none bg-transparent px-2 w-[120px]"
-              style={{ color: theme.textColor }}
+              placeholder="Tìm kiếm"
+              className="outline-none border-none bg-transparent px-2 w-[140px] placeholder-gray-400 text-[#343a40]"
             />
-            <button type="submit" style={{ color: theme.textColor }} className=" text-lg">
+            <button type="submit" className="text-lg text-[#e91e63]">
               <FiSearch />
             </button>
           </form>
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            style={{ borderColor: theme.textColor, color: theme.textColor }}
-            className="relative w-9 h-9 border   rounded-full flex items-center justify-center hover:bg-green-50 transition-colors"
+            className="relative w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4] transition-colors"
           >
             <FaShoppingCart />
             {totalItems > 0 && (
@@ -285,10 +298,10 @@ export default function Header() {
           {!isLoggedIn
             ? (
                 <>
-                  <Link href="/sign-in" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+                  <Link href="/sign-in" className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]">
                     Đăng nhập
                   </Link>
-                  <Link href="/sign-up" className="px-3 py-1 border  rounded-full  hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+                  <Link href="/sign-up" className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]">
                     Đăng ký
                   </Link>
                 </>
@@ -297,21 +310,20 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3 py-1 border  rounded-full hover:bg-green-50"
-                  style={{ borderColor: theme.textColor, color: theme.textColor }}
+                  className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]"
                   title="Đăng xuất"
                 >
                   Đăng xuất
                 </button>
               )}
 
-          <button type="button" className="w-9 h-9 border  rounded-full flex items-center justify-center hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]">
             🤍
           </button>
-          <button type="button" className="w-9 h-9 border  rounded-full flex items-center justify-center hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]">
             🛒
           </button>
-          <button type="button" className="flex items-center gap-1 px-3 py-1 border  rounded-md hover:bg-green-50" style={{ borderColor: theme.textColor, color: theme.textColor }}>
+          <button type="button" className="flex items-center gap-1 px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-md hover:bg-[#ffe5ea]">
             🇻🇳
             {' '}
             <span className="text-xs">▼</span>
@@ -362,12 +374,12 @@ export default function Header() {
               ? (
                   <>
                     <li className="py-2">
-                      <Link href="/sign-in" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border">
+                      <Link href="/sign-in" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border border-[#ff4d6d] text-[#ff4d6d]">
                         Đăng nhập
                       </Link>
                     </li>
                     <li className="py-2">
-                      <Link href="/sign-up" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border">
+                      <Link href="/sign-up" onClick={() => setShowMobileMenu(false)} className="block px-2 py-2 rounded border border-[#ff4d6d] text-[#ff4d6d]">
                         Đăng ký
                       </Link>
                     </li>
@@ -378,7 +390,7 @@ export default function Header() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="w-full text-left px-2 py-2 rounded border"
+                      className="w-full text-left px-2 py-2 rounded border border-[#ff4d6d] text-[#ff4d6d]"
                     >
                       Đăng xuất
                     </button>
