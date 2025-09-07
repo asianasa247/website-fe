@@ -3,7 +3,7 @@ import axios from 'axios';
 const root
   = (process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, '') as string)
     || 'https://bh.asianasa.com:8443';
-
+const dbName = process.env.NEXT_PUBLIC_DB_NAME || 'asianasa';
 const api = axios.create({
   baseURL: `${root}/api`,
   // KHÔNG set Content-Type mặc định
@@ -30,6 +30,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers = config.headers ?? {};
     (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+    (config.headers as Record<string, string>).dbName = `dbName`;
   }
   return config;
 });
