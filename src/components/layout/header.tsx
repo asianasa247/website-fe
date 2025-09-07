@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
+import { FaClock, FaEnvelope, FaFacebookSquare, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 
 import authService from '@/app/[locale]/(marketing)/api/auth';
@@ -195,20 +195,17 @@ export default function Header() {
             </span>
           </div>
 
-          {/* Phải: icon mạng xã hội cố định */}
+          {/* Phải: icon mạng xã hội */}
           <div className="flex items-center gap-3 pr-1">
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               title="Facebook"
-              className="inline-flex"
+              className="inline-flex text-[#1877f2]"
+              aria-label="Facebook"
             >
-              <img
-                src="https://www.google.com/url?sa=i&url=https%3A%2F%2Ficon-icons.com%2Ficon%2Ffacebook%2F76449&psig=AOvVaw017_gTlmIG-KvK1KwYXMNx&ust=1757342904351000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOjUrM_yxo8DFQAAAAAdAAAAABAL"
-                alt="Facebook"
-                className="w-6 h-6"
-              />
+              <FaFacebookSquare className="w-6 h-6" />
             </a>
             <a
               href="https://zalo.me"
@@ -216,11 +213,13 @@ export default function Header() {
               rel="noopener noreferrer"
               title="Zalo"
               className="inline-flex"
+              aria-label="Zalo"
             >
               <img
-                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/Zalo.svg"
+                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png"
                 alt="Zalo"
-                className="w-6 h-6"
+                className="w-6 h-6 rounded"
+                referrerPolicy="no-referrer"
               />
             </a>
           </div>
