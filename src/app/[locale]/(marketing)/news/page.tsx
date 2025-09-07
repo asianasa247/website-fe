@@ -38,27 +38,28 @@ export default function NewsList() {
 
   return (
     <div className="new-wrap px-2 py-2 lg:py-4 lg:px-8">
-      <div className="news grid gap-4">
+      <div className="news grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         {news.map(el => (
-          <Link key={el.id} href={`/news/${el.id}`} className="block new">
-            <div className="new flex gap-4">
-              <div className="new-image w-[200px] min-w-[200px]">
+          <Link key={el.id} href={`/news/${el.id}`} className="block new h-full">
+            <div className="new flex bg-white rounded-lg shadow overflow-hidden h-full">
+              <div className="new-image w-2/5 min-w-[180px] aspect-[16/9] relative">
                 <Image
                   src={serverUrlImage + el.images?.[0]?.fileUrl || '/placeholder.jpg'}
                   alt={el.title}
-                  width={200}
-                  height={130}
-                  className="object-cover w-full h-[130px]"
+                  fill
+                  className="object-cover rounded-l-lg"
                 />
               </div>
-              <div className="new-content flex-1">
-                <div className="new-title text-xl font-semibold mb-1">{el.title}</div>
-                <div className="new-desc text-gray-700 mb-2">
-                  {el.shortContent}
-                  {' '}
-                  <Link href={`/news/${el.id}`} className="text-green-600 hover:underline">
-                    (Xem thêm...)
-                  </Link>
+              <div className="new-content w-3/5 p-4 flex flex-col justify-between">
+                <div>
+                  <div className="new-title text-lg font-semibold mb-2 line-clamp-2">{el.title}</div>
+                  <div className="new-desc text-gray-700 mb-3 line-clamp-3">
+                    {el.shortContent}
+                    {' '}
+                    <Link href={`/news/${el.id}`} className="text-green-600 hover:underline">
+                      (Xem thêm...)
+                    </Link>
+                  </div>
                 </div>
                 <div className="new-ext text-sm text-gray-500">
                   bởi
