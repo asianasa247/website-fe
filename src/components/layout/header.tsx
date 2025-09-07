@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
+import { FaClock, FaEnvelope, FaFacebookSquare, FaMapMarkerAlt, FaPhoneAlt, FaShoppingCart } from 'react-icons/fa';
 import { FiMenu, FiSearch, FiX } from 'react-icons/fi';
 
 import authService from '@/app/[locale]/(marketing)/api/auth';
@@ -195,20 +195,17 @@ export default function Header() {
             </span>
           </div>
 
-          {/* Phải: icon mạng xã hội cố định */}
+          {/* Phải: icon mạng xã hội */}
           <div className="flex items-center gap-3 pr-1">
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               title="Facebook"
-              className="inline-flex"
+              className="inline-flex text-[#1877f2]"
+              aria-label="Facebook"
             >
-              <img
-                src="https://static.xx.fbcdn.net/rsrc.php/y8/r/dF5SId3UHWd.svg"
-                alt="Facebook"
-                className="w-6 h-6"
-              />
+              <FaFacebookSquare className="w-6 h-6" />
             </a>
             <a
               href="https://zalo.me"
@@ -216,11 +213,13 @@ export default function Header() {
               rel="noopener noreferrer"
               title="Zalo"
               className="inline-flex"
+              aria-label="Zalo"
             >
               <img
-                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/Zalo.svg"
+                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png"
                 alt="Zalo"
-                className="w-6 h-6"
+                className="w-6 h-6 rounded"
+                referrerPolicy="no-referrer"
               />
             </a>
           </div>
