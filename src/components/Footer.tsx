@@ -119,7 +119,7 @@ const Footer = () => {
     }
     setSubmitting(true);
     try {
-      const base = 'https://asianasa.com:8443/api/WebMails/';
+      const base = 'https://bh.asianasa.com:8443/api/WebMails/';
       const qs = new URLSearchParams({
         email,
         phoneNumber,
