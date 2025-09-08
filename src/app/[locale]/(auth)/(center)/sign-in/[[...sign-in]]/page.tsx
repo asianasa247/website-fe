@@ -233,6 +233,7 @@ export default function Login() {
     return () => {
       clearInterval(t);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [googleClientId]);
 
   // Company info (logo, tên) → gọi /api/Companies/get-company và lấy field name
