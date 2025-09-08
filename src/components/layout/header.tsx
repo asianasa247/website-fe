@@ -172,23 +172,23 @@ export default function Header() {
       <div className="bg-gray-50  text-xs hidden md:block py-2 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap font-bold">
-            <span className="flex items-center gap-1 font-bold">
+          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
               <FaPhoneAlt className="" />
               {' '}
               {companyInfo?.phone}
             </span>
-            <span className="flex items-center gap-1 font-bold">
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
               <FaEnvelope className="" />
               {' '}
               {companyInfo?.email}
             </span>
-            <span className="flex items-center gap-1 font-bold">
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
               <FaMapMarkerAlt className="" />
               {' '}
               {companyInfo?.address}
             </span>
-            <span className="flex items-center gap-1 font-bold">
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
               <FaClock className="" />
               {' '}
               {companyInfo?.websiteName || '8:00 - 17:00'}
