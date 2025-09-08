@@ -26,7 +26,7 @@ function readToken(): string | null {
 // gắn Authorization cho mọi request (nếu có token)
 api.interceptors.request.use((config) => {
   const token = readToken();
-  const dbName = process.env.NEXT_PUBLIC_DB_NAME || 'asianasa';
+  const dbName = process.env.NEXT_PUBLIC_DB_NAME ;
 
   if (token) {
     config.headers = config.headers ?? {};
