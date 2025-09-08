@@ -32,8 +32,8 @@ api.interceptors.request.use((config) => {
     config.headers = config.headers ?? {};
    // (config.headers as Record<string, string>).Authorization = `Bearer ${dbName}`;
     //(config.headers as Record<string, string>).dbName = `dbName`;
-    (config.headers as Record<string, string>).Authorization = `Bearer ${token }`;
-    (config.headers as Record<string, string>).dbName =dbName;
+    (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+    (config.headers as Record<string, string>).dbName = `${dbName}`;
   }
   return config;
 });
