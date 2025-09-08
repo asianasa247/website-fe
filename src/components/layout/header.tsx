@@ -43,7 +43,7 @@ export default function Header() {
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  // const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
+  const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
   // const [socials, setSocials] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,7 +56,7 @@ export default function Header() {
       const data = (company as any)?.data ?? (company as CompanyPayload);
       if (data) {
         const companyData = data as CompanyPayload;
-        // setCompanyInfo(companyData);
+        setCompanyInfo(companyData);
         if (companyData.fileLogo) {
           setCompanyLogo(`${url}/${companyData.fileLogo}`);
         }
@@ -176,22 +176,22 @@ export default function Header() {
             <span className="flex items-center gap-1 font-bold">
               <FaPhoneAlt className="" />
               {' '}
-              0918 240 953 - 0901 254 598 - 0908799 090
+              {companyInfo?.phone}
             </span>
             <span className="flex items-center gap-1 font-bold">
               <FaEnvelope className="" />
               {' '}
-              nguyenthanhquanvt81@gmail.com
+              {companyInfo?.email}
             </span>
             <span className="flex items-center gap-1 font-bold">
               <FaMapMarkerAlt className="" />
               {' '}
-              1816 ĐƯỜNG VÕ VĂN KIỆT, ẤP TÂY, HÒA LONG, TP BÀ RỊA, TỈNH BR-VT
+              {companyInfo?.address}
             </span>
             <span className="flex items-center gap-1 font-bold">
               <FaClock className="" />
               {' '}
-              07:30 - 17:00 Thứ Hai - Thứ Bảy
+              {companyInfo?.websiteName || '8:00 - 17:00'}
             </span>
           </div>
 
