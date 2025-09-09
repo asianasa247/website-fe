@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import type { MenuItemModel } from './layout/header';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import authService from '@/app/[locale]/(marketing)/api/auth';
@@ -9,7 +8,6 @@ import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { getIntroduceList } from '@/app/[locale]/(marketing)/api/introduceService';
 
 const Footer = () => {
-  const [webCategories, setWebCategories] = useState<any[]>([]);
   const [companyInfo, setCompanyInfo] = useState<any>();
   const [aboutList, setAboutList] = useState<any[]>([]);
   const [socials, setSocials] = useState<any[]>([]);
@@ -20,10 +18,21 @@ const Footer = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState<string>('');
 
+  const [themeColors, setThemeColors] = useState<any>(null);
+
   useEffect(() => {
     authService.getCompany().then((company) => {
       if (company) {
         setCompanyInfo(company.data);
+        const raw = (company.data as any)?.defautl_themeweb ?? (company.data as any)?.defautlThemeweb;
+        if (typeof raw === 'string' && raw.trim()) {
+          try {
+            const parsed = JSON.parse(raw);
+            setThemeColors(parsed);
+          } catch {
+            // ignore
+          }
+        }
       } else {
         console.warn('No company data found');
       }
@@ -34,9 +43,6 @@ const Footer = () => {
       console.error('Failed to fetch socials:', error);
     });
 
-    dashboardService.getListWebCategory().then((res) => {
-      setWebCategories(transformToHierarchicalMenu(res.data));
-    });
     getIntroduceList().then((res) => {
       setAboutList(res.data);
     }).catch((error) => {
@@ -47,68 +53,6 @@ const Footer = () => {
   const getTitle = (item: any) => {
     return item.title;
   };
-
-  const loadNameCategoryByLang = (cat: any) => {
-    return cat.name;
-  };
-  function transformToHierarchicalMenu(menuItems: MenuItemModel[]): MenuItemModel[] {
-  // Filter parent items with type = 5
-    const parentItems = menuItems.filter(item => item.type === 5 && item.isShowWeb);
-
-    // Map all menu items for lookup
-    const itemMap = new Map<string, MenuItemModel>();
-    menuItems.forEach((item) => {
-      itemMap.set(item.code, { ...item, children: [] });
-    });
-
-    // Build hierarchical structure
-    const result: MenuItemModel[] = [];
-
-    parentItems.forEach((item) => {
-      const menuItem = itemMap.get(item.code);
-      if (!menuItem) {
-        return;
-      }
-
-      if (item.codeParent) {
-      // If the item has a parent, add it as a child
-        const parent = itemMap.get(item.codeParent);
-        if (parent) {
-          parent.children?.push(menuItem);
-        }
-      } else {
-      // Root items
-        result.push(menuItem);
-      }
-    });
-
-    // Add remaining children to their respective parents
-    menuItems.filter(item => item.type !== 5 && item.isShowWeb).forEach((item) => {
-      if (item.codeParent) {
-        const parent = itemMap.get(item.codeParent);
-        const child = itemMap.get(item.code);
-        if (parent && child) {
-          parent.children?.push(child);
-        }
-      }
-    });
-
-    // Sort items by 'numberItem'
-    const sortByNumberItem = (items: MenuItemModel[]) => {
-      return items.sort((a, b) => (a.numberItem ?? 0) - (b.numberItem ?? 0));
-    };
-
-    const sortedResult = sortByNumberItem(result);
-
-    sortedResult.forEach((item) => {
-      if (item.children && item.children.length > 0) {
-        item.children = sortByNumberItem(item.children);
-      }
-    });
-    // Return the sorted result
-
-    return sortedResult;
-  }
 
   const handleSubscribe = async (e: any) => {
     e.preventDefault();
@@ -153,27 +97,17 @@ const Footer = () => {
   return (
     <div
       className="footer-wrapper text-gray-800 mt-10 px-6 py-10 font-bold border-t"
-      style={{ color: '#374151', backgroundColor: '#f3f4f6', borderColor: '#e5e7eb' }}
+      style={{
+        color: themeColors?.invalidPrimaryColor ?? '#374151',
+        backgroundColor: themeColors?.primaryColor ?? '#f3f4f6',
+        borderColor: themeColors?.lightPrimaryColor ?? '#e5e7eb',
+      }}
     >
-
-      {/* Danh mục chuyên mục */}
-      <div
-        className="category-list flex flex-wrap gap-4 justify-center mb-6"
-        style={{ color: '#4b5563' }}
-      >
-        {webCategories.map(item => (
-          <div key={item.code} className="category-item flex items-center gap-2">
-            <a href={`#${item.code}`} className="flex items-center gap-2 hover:underline">
-              <span className="text-sm">{loadNameCategoryByLang(item)}</span>
-            </a>
-          </div>
-        ))}
-      </div>
 
       {/* Footer columns */}
       <div
         className="footer-columns grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm"
-        style={{ color: '#374151' }}
+        style={{ color: themeColors?.invalidPrimaryColor ?? '#374151' }}
       >
         {/* Cột 1 */}
         <div className="footer-col">
@@ -231,27 +165,39 @@ const Footer = () => {
               onChange={e => setEmail(e.target.value)}
               placeholder="Email của bạn"
               required
-              className="w-full px-3 py-2 border rounded mb-2 placeholder-gray-400"
+              className="w-full px-3 py-2 border rounded mb-2 "
+              style={{
+                color: themeColors?.invalidPrimaryColor ?? '#374151',
+              }}
             />
             <input
               type="tel"
               value={phoneNumber}
               onChange={e => setPhoneNumber(e.target.value)}
               placeholder="Số điện thoại"
-              className="w-full px-3 py-2 border rounded mb-2 placeholder-gray-400"
+              className="w-full px-3 py-2 border rounded mb-2 "
+              style={{
+                color: themeColors?.invalidPrimaryColor ?? '#374151',
+              }}
             />
             <textarea
               rows={2}
               placeholder="Ý kiến của bạn."
               value={note}
               onChange={e => setNote(e.target.value)}
-              className="w-full px-3 py-2 border rounded mb-2 placeholder-gray-400"
+              className="w-full px-3 py-2 border rounded mb-2"
+              style={{
+                color: themeColors?.invalidPrimaryColor ?? '#374151',
+              }}
             >
             </textarea>
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-60"
+              className="w-full text-blue-500 py-2 px-4 rounded disabled:opacity-60"
+              style={{
+                background: themeColors?.invalidPrimaryColor ?? '#374151',
+              }}
             >
               {submitting ? 'Đang gửi...' : 'Gửi'}
             </button>

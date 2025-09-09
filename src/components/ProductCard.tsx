@@ -60,6 +60,7 @@ export default function ProductZone({
       },
     });
   };
+
   return (
     <div className="space-y-8 container mx-auto px-0 md:px-8 lg:px-16">
       {/* Banners */}
@@ -100,7 +101,7 @@ export default function ProductZone({
         {selectProducts?.map(product => (
           <div
             key={product.id}
-            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w-[300px] w-full mx-auto"
+            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w:[300px] w-full mx-auto"
           >
             {/* Discount badge */}
             {product.discount && (
@@ -146,7 +147,7 @@ export default function ProductZone({
                   {product.detail2 || product.detail1}
                 </p>
                 {product.titleVietNam && (
-                  <p className="text-xs text-gray-400 line-clamp-2 mt-1">
+                  <p className="text-xs text-gray-400 line-clamp-2 mt-1" style={{ color: theme.textColorSecondary }}>
                     {product.titleVietNam}
                   </p>
                 )}
@@ -154,13 +155,13 @@ export default function ProductZone({
 
               {/* Giá */}
               <div className="mt-3 space-y-1">
-                <div className="text-base font-bold " style={{ color: theme.textColor }}>
+                <div className="text-base font-bold " style={{ color: theme.textColorSecondary }}>
                   {formatCurrency(getDiscountedPrice(product))}
                   {' '}
                   {unit}
                 </div>
                 {product.discount && (
-                  <div className="text-xs  line-through" style={{ color: theme.textColor }}>
+                  <div className="text-xs  line-through" style={{ color: theme.textColorSecondary }}>
                     {formatCurrency(product.webPriceVietNam || 0)}
                     {' '}
                     {unit}
@@ -179,7 +180,7 @@ export default function ProductZone({
     text-sm font-medium
       py-3 rounded-full
       transition-all shadow-md"
-                style={{ color: theme.textColor, border: theme.primaryColor }}
+                style={{ color: theme.textColor, border: theme.textColor }}
               >
                 <i className="pi pi-shopping-cart text-base" />
                 <span>Thêm vào giỏ hàng</span>
