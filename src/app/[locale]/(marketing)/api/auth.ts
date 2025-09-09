@@ -154,8 +154,8 @@ async function changePassword(id: number | string, password: string) {
 async function getCompany(): Promise<CompanyInfo> {
   const candidates = [
     '/WebDashboard/getCompany',
-    '/WebCompany/getCompany',
-    '/WebCompany/get',
+    '/WebCompanies/getCompany',
+    '/WebCompanies/get',
     '/WebConfig/getCompany',
     '/WebAuth/getCompany',
     '/WebAuth/company',

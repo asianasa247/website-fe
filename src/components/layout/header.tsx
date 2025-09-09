@@ -43,7 +43,7 @@ export default function Header() {
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  // const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
+  const [companyInfo, setCompanyInfo] = useState<CompanyPayload | null>(null);
   // const [socials, setSocials] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,42 +52,19 @@ export default function Header() {
   const totalItems = cartState.items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
-    const resolveLogoUrl = (base: string, fileLogo?: string) => {
-      if (!fileLogo) {
-        return null;
-      }
-      if (/^https?:\/\//i.test(fileLogo)) {
-        return fileLogo;
-      }
-      return `${base}/${fileLogo}`.replace(/([^:]\/)\/+/g, '$1');
-    };
-
-    (async () => {
-      try {
-        // GET /api/WebCompanies/getCompany
-        const res = await fetch(`${url}/api/WebCompanies/getCompany`, { method: 'GET' });
-        if (!res.ok) {
-          throw new Error(`Company API ${res.status}`);
+    authService.getCompany().then((company: unknown) => {
+      const data = (company as any)?.data ?? (company as CompanyPayload);
+      if (data) {
+        const companyData = data as CompanyPayload;
+        setCompanyInfo(companyData);
+        if (companyData.fileLogo) {
+          setCompanyLogo(`${url}/${companyData.fileLogo}`);
         }
-        const raw = await res.json();
-        const data: CompanyPayload = (raw?.data ?? raw) as CompanyPayload;
-
-        if (data) {
-          // setCompanyInfo(data);
-          const logoUrl = resolveLogoUrl(url, data.fileLogo);
-          if (logoUrl) {
-            setCompanyLogo(logoUrl);
-          }
-
-          if (typeof data.defautlThemeweb === 'string') {
-            localStorage.setItem('defautlThemeweb', data.defautlThemeweb);
-          }
+        if (typeof companyData.defautlThemeweb === 'string') {
+          localStorage.setItem('defautlThemeweb', companyData.defautlThemeweb);
         }
-      } catch {
-        // fallback: không hiển thị logo nếu lỗi
-        setCompanyLogo(null);
       }
-    })();
+    });
 
     dashboardService.getListWebCategory().then((res: any) => {
       setMenu(transformToHierarchicalMenu(res.data));
@@ -195,26 +172,26 @@ export default function Header() {
       <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-2">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap font-semibold tracking-wide">
-            <span className="flex items-center gap-1">
-              <FaPhoneAlt className="opacity-90" />
+          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+              <FaPhoneAlt className="" />
               {' '}
-              0918 240 953 - 0901 254 598 - 0908799 090
+              {companyInfo?.phone}
             </span>
-            <span className="flex items-center gap-1">
-              <FaEnvelope className="opacity-90" />
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+              <FaEnvelope className="" />
               {' '}
-              nguyenthanhquanvt81@gmail.com
+              {companyInfo?.email}
             </span>
-            <span className="flex items-center gap-1">
-              <FaMapMarkerAlt className="opacity-90" />
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+              <FaMapMarkerAlt className="" />
               {' '}
-              1816 ĐƯỜNG VÕ VĂN KIỆT, ẤP TÂY, HÒA LONG, TP BÀ RỊA, TỈNH BR-VT
+              {companyInfo?.address}
             </span>
-            <span className="flex items-center gap-1">
-              <FaClock className="opacity-90" />
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+              <FaClock className="" />
               {' '}
-              07:30 - 17:00 Thứ Hai - Thứ Bảy
+              {companyInfo?.websiteName || '8:00 - 17:00'}
             </span>
           </div>
 
