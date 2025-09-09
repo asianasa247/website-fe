@@ -57,11 +57,29 @@ export default function Header() {
       if (data) {
         const companyData = data as CompanyPayload;
         setCompanyInfo(companyData);
+
         if (companyData.fileLogo) {
           setCompanyLogo(`${url}/${companyData.fileLogo}`);
         }
-        if (typeof companyData.defautlThemeweb === 'string') {
-          localStorage.setItem('defautlThemeweb', companyData.defautlThemeweb);
+
+        // ✅ Lấy theme từ API: hỗ trợ cả defautl_themeweb (underscore) và defautlThemeweb (camel)
+        const themeRaw = (companyData as any).defautl_themeweb ?? (companyData as any).defautlThemeweb;
+
+        if (typeof themeRaw === 'string' && themeRaw.trim()) {
+          localStorage.setItem('defautlThemeweb', themeRaw);
+          try {
+            const parsed = JSON.parse(themeRaw);
+            if (parsed && typeof parsed === 'object') {
+              (theme as any).primaryColor = parsed.primaryColor ?? (theme as any).primaryColor;
+              (theme as any).primaryColorText = parsed.primaryColorText ?? (theme as any).primaryColorText;
+              (theme as any).textColor = parsed.textColor ?? (theme as any).textColor;
+              (theme as any).textColorSecondary = parsed.textColorSecondary ?? (theme as any).textColorSecondary;
+              (theme as any).lightPrimaryColor = parsed.lightPrimaryColor ?? (theme as any).lightPrimaryColor;
+              (theme as any).invalidPrimaryColor = parsed.invalidPrimaryColor ?? (theme as any).invalidPrimaryColor;
+            }
+          } catch {
+            // ignore parse errors
+          }
         }
       }
     });
@@ -169,26 +187,26 @@ export default function Header() {
     <header className="w-full bg-white relative sticky top-0 z-[1000] transition-shadow">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+      <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-2">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
               <FaPhoneAlt className="" />
               {' '}
               {companyInfo?.phone}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
               <FaEnvelope className="" />
               {' '}
               {companyInfo?.email}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
               <FaMapMarkerAlt className="" />
               {' '}
               {companyInfo?.address}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
               <FaClock className="" />
               {' '}
               {companyInfo?.websiteName || '8:00 - 17:00'}
@@ -227,10 +245,10 @@ export default function Header() {
       </div>
 
       {/* ✅ Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b border-[#ededed] bg-white">
+      <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b border-[#ededed] bg-white" style={{ backgroundColor: theme.primaryColor }}>
         {/* Logo */}
         {companyLogo && (
-          <Link href="/" aria-label="Trang chủ">
+          <Link href="/" aria-label="Trang chủ" style={{ color: theme.invalidPrimaryColor }}>
             <img src={companyLogo} alt="Logo" width={60} height={60} className="rounded-md hover:opacity-90 transition-opacity" />
           </Link>
         )}
@@ -244,7 +262,7 @@ export default function Header() {
         <nav className="hidden md:flex flex-1 justify-start ml-6">
           <ul className="flex gap-6 font-medium text-[#343a40]">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer">
+              <li key={item.code} className="cursor-pointer" style={{ color: theme.invalidPrimaryColor }}>
                 <Link
                   href={item.typeMenu}
                   className="relative inline-block py-1 transition-colors hover:text-[#e91e63] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e91e63]/40 rounded"
@@ -258,6 +276,7 @@ export default function Header() {
             {moreMenu.length > 0 && (
               <li
                 className="relative cursor-pointer flex items-center gap-1 group text-[#343a40] hover:text-[#e91e63]"
+                style={{ color: theme.invalidPrimaryColor }}
               >
                 Xem thêm
                 {' '}
@@ -277,14 +296,15 @@ export default function Header() {
         {/* Search + Actions (desktop only) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Search */}
-          <form className="flex items-center border rounded-full px-3 py-1.5 border-[#e91e63] focus-within:shadow-[0_0_0_3px_rgba(233,30,99,0.12)]">
+          <form className="flex items-center border rounded-full px-3 py-1.5 focus-within:shadow-[0_0_0_3px_rgba(233,30,99,0.12)]" style={{ color: theme.invalidPrimaryColor }}>
             <input
               type="text"
               placeholder="Tìm kiếm"
               className="outline-none border-none bg-transparent px-2 w-[160px] placeholder-gray-400 text-[#343a40]"
               aria-label="Tìm kiếm"
+              style={{ color: theme.invalidPrimaryColor }}
             />
-            <button type="submit" className="text-lg text-[#e91e63]" aria-label="Search">
+            <button type="submit" className="text-lg" aria-label="Search" style={{ color: theme.invalidPrimaryColor }}>
               <FiSearch />
             </button>
           </form>
@@ -293,12 +313,13 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="relative w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4] transition-colors"
+            className="relative w-9 h-9 border text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4] transition-colors"
             aria-label="Giỏ hàng"
+            style={{ color: theme.invalidPrimaryColor }}
           >
             <FaShoppingCart />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center" style={{ color: theme.invalidPrimaryColor }}>
                 {totalItems}
               </span>
             )}
@@ -308,10 +329,10 @@ export default function Header() {
           {!isLoggedIn
             ? (
                 <>
-                  <Link href="/sign-in" className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors">
+                  <Link href="/sign-in" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.invalidPrimaryColor }}>
                     Đăng nhập
                   </Link>
-                  <Link href="/sign-up" className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors">
+                  <Link href="/sign-up" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.invalidPrimaryColor }}>
                     Đăng ký
                   </Link>
                 </>
@@ -320,21 +341,22 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors"
+                  className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors"
                   title="Đăng xuất"
+                  style={{ color: theme.invalidPrimaryColor }}
                 >
                   Đăng xuất
                 </button>
               )}
 
           {/* Nút phụ: giữ 🤍, đã bỏ emoji 🛒 trùng */}
-          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]" aria-label="Yêu thích">
+          <button type="button" className="w-9 h-9 border rounded-full flex items-center justify-center hover:bg-[#fff1f4]" aria-label="Yêu thích" style={{ color: theme.invalidPrimaryColor }}>
             🤍
           </button>
-          <button type="button" className="flex items-center gap-1 px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-md hover:bg-[#ffe5ea]">
+          <button type="button" className="flex items-center gap-1 px-3 py-1.5 border rounded-md hover:bg-[#ffe5ea]" style={{ color: theme.invalidPrimaryColor }}>
             🇻🇳
             {' '}
-            <span className="text-xs">▼</span>
+            <span className="text-xs" style={{ color: theme.invalidPrimaryColor }}>▼</span>
           </button>
         </div>
 
