@@ -52,19 +52,42 @@ export default function Header() {
   const totalItems = cartState.items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
-    authService.getCompany().then((company: unknown) => {
-      const data = (company as any)?.data ?? (company as CompanyPayload);
-      if (data) {
-        const companyData = data as CompanyPayload;
-        // setCompanyInfo(companyData);
-        if (companyData.fileLogo) {
-          setCompanyLogo(`${url}/${companyData.fileLogo}`);
-        }
-        if (typeof companyData.defautlThemeweb === 'string') {
-          localStorage.setItem('defautlThemeweb', companyData.defautlThemeweb);
-        }
+    const resolveLogoUrl = (base: string, fileLogo?: string) => {
+      if (!fileLogo) {
+        return null;
       }
-    });
+      if (/^https?:\/\//i.test(fileLogo)) {
+        return fileLogo;
+      }
+      return `${base}/${fileLogo}`.replace(/([^:]\/)\/+/g, '$1');
+    };
+
+    (async () => {
+      try {
+        // GET /api/WebCompanies/getCompany
+        const res = await fetch(`${url}/api/WebCompanies/getCompany`, { method: 'GET' });
+        if (!res.ok) {
+          throw new Error(`Company API ${res.status}`);
+        }
+        const raw = await res.json();
+        const data: CompanyPayload = (raw?.data ?? raw) as CompanyPayload;
+
+        if (data) {
+          // setCompanyInfo(data);
+          const logoUrl = resolveLogoUrl(url, data.fileLogo);
+          if (logoUrl) {
+            setCompanyLogo(logoUrl);
+          }
+
+          if (typeof data.defautlThemeweb === 'string') {
+            localStorage.setItem('defautlThemeweb', data.defautlThemeweb);
+          }
+        }
+      } catch {
+        // fallback: không hiển thị logo nếu lỗi
+        setCompanyLogo(null);
+      }
+    })();
 
     dashboardService.getListWebCategory().then((res: any) => {
       setMenu(transformToHierarchicalMenu(res.data));
@@ -87,7 +110,7 @@ export default function Header() {
 
     const handleScroll = () => {
       const header = document.querySelector('header');
-      if (window.scrollY > 50) {
+      if (window.scrollY > 8) {
         header?.classList.add('shadow-md');
       } else {
         header?.classList.remove('shadow-md');
@@ -166,43 +189,43 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full bg-white relative">
+    <header className="w-full bg-white relative sticky top-0 z-[1000] transition-shadow">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="bg-gray-50  text-xs hidden md:block py-2 font-bold" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
-        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-1 text-gray-700">
+      <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.primaryColor, color: theme.primaryColorText }}>
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-2">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap font-bold">
-            <span className="flex items-center gap-1 font-bold">
-              <FaPhoneAlt className="" />
+          <div className="flex items-center gap-4 flex-wrap font-semibold tracking-wide">
+            <span className="flex items-center gap-1">
+              <FaPhoneAlt className="opacity-90" />
               {' '}
               0918 240 953 - 0901 254 598 - 0908799 090
             </span>
-            <span className="flex items-center gap-1 font-bold">
-              <FaEnvelope className="" />
+            <span className="flex items-center gap-1">
+              <FaEnvelope className="opacity-90" />
               {' '}
               nguyenthanhquanvt81@gmail.com
             </span>
-            <span className="flex items-center gap-1 font-bold">
-              <FaMapMarkerAlt className="" />
+            <span className="flex items-center gap-1">
+              <FaMapMarkerAlt className="opacity-90" />
               {' '}
               1816 ĐƯỜNG VÕ VĂN KIỆT, ẤP TÂY, HÒA LONG, TP BÀ RỊA, TỈNH BR-VT
             </span>
-            <span className="flex items-center gap-1 font-bold">
-              <FaClock className="" />
+            <span className="flex items-center gap-1">
+              <FaClock className="opacity-90" />
               {' '}
               07:30 - 17:00 Thứ Hai - Thứ Bảy
             </span>
           </div>
 
-          {/* Phải: icon mạng xã hội */}
+          {/* Phải: icon mạng xã hội (giữ nguyên) */}
           <div className="flex items-center gap-3 pr-1">
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
               title="Facebook"
-              className="inline-flex text-[#1877f2]"
+              className="inline-flex text-[#1877f2] hover:opacity-90 transition-opacity"
               aria-label="Facebook"
             >
               <FaFacebookSquare className="w-6 h-6" />
@@ -230,22 +253,29 @@ export default function Header() {
       <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b border-[#ededed] bg-white">
         {/* Logo */}
         {companyLogo && (
-          <Link href="/">
-            <img src={companyLogo} alt="Logo" width={60} height={60} />
+          <Link href="/" aria-label="Trang chủ">
+            <img src={companyLogo} alt="Logo" width={60} height={60} className="rounded-md hover:opacity-90 transition-opacity" />
           </Link>
         )}
 
         {/* Hamburger cho mobile */}
-        <button type="button" className="md:hidden text-3xl" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+        <button type="button" className="md:hidden text-3xl" onClick={() => setShowMobileMenu(!showMobileMenu)} aria-label="Toggle menu">
           {showMobileMenu ? <FiX /> : <FiMenu />}
         </button>
 
-        {/* Menu Desktop */}
-        <nav className="hidden md:flex flex-1 justify-start">
+        {/* Menu Desktop - tăng khoảng cách với logo */}
+        <nav className="hidden md:flex flex-1 justify-start ml-6">
           <ul className="flex gap-6 font-medium text-[#343a40]">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer transition hover:text-[#e91e63]">
-                <Link href={item.typeMenu}>{item.name}</Link>
+              <li key={item.code} className="cursor-pointer">
+                <Link
+                  href={item.typeMenu}
+                  className="relative inline-block py-1 transition-colors hover:text-[#e91e63] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e91e63]/40 rounded"
+                >
+                  <span className="after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-0 after:bg-[#e91e63] hover:after:w-full after:transition-[width] after:duration-300">
+                    {item.name}
+                  </span>
+                </Link>
               </li>
             ))}
             {moreMenu.length > 0 && (
@@ -255,7 +285,7 @@ export default function Header() {
                 Xem thêm
                 {' '}
                 <span className="text-xs">▼</span>
-                <ul className="absolute left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[160px] hidden group-hover:block z-50">
+                <ul className="absolute left-0 top-full mt-2 bg-white border rounded-lg shadow-xl min-w-[180px] hidden group-hover:block z-50 overflow-hidden">
                   {moreMenu.map(item => (
                     <li key={item.code} className="px-4 py-2 hover:bg-[#fff1f4]">
                       <Link href="/">{item.name}</Link>
@@ -270,20 +300,24 @@ export default function Header() {
         {/* Search + Actions (desktop only) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Search */}
-          <form className="flex items-center border rounded-full px-3 py-1 border-[#e91e63] focus-within:shadow-[0_0_0_2px_rgba(233,30,99,0.15)]">
+          <form className="flex items-center border rounded-full px-3 py-1.5 border-[#e91e63] focus-within:shadow-[0_0_0_3px_rgba(233,30,99,0.12)]">
             <input
               type="text"
               placeholder="Tìm kiếm"
-              className="outline-none border-none bg-transparent px-2 w-[140px] placeholder-gray-400 text-[#343a40]"
+              className="outline-none border-none bg-transparent px-2 w-[160px] placeholder-gray-400 text-[#343a40]"
+              aria-label="Tìm kiếm"
             />
-            <button type="submit" className="text-lg text-[#e91e63]">
+            <button type="submit" className="text-lg text-[#e91e63]" aria-label="Search">
               <FiSearch />
             </button>
           </form>
+
+          {/* Giỏ hàng ở header (giữ icon đen + badge) */}
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
             className="relative w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4] transition-colors"
+            aria-label="Giỏ hàng"
           >
             <FaShoppingCart />
             {totalItems > 0 && (
@@ -297,10 +331,10 @@ export default function Header() {
           {!isLoggedIn
             ? (
                 <>
-                  <Link href="/sign-in" className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]">
+                  <Link href="/sign-in" className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors">
                     Đăng nhập
                   </Link>
-                  <Link href="/sign-up" className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]">
+                  <Link href="/sign-up" className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors">
                     Đăng ký
                   </Link>
                 </>
@@ -309,32 +343,31 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea]"
+                  className="px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-full hover:bg-[#ffe5ea] transition-colors"
                   title="Đăng xuất"
                 >
                   Đăng xuất
                 </button>
               )}
 
-          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]">
+          {/* Nút phụ: giữ 🤍, đã bỏ emoji 🛒 trùng */}
+          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]" aria-label="Yêu thích">
             🤍
           </button>
-          <button type="button" className="w-9 h-9 border border-[#e0e0e0] text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4]">
-            🛒
-          </button>
-          <button type="button" className="flex items-center gap-1 px-3 py-1 border border-[#ff4d6d] text-[#ff4d6d] rounded-md hover:bg-[#ffe5ea]">
+          <button type="button" className="flex items-center gap-1 px-3 py-1.5 border border-[#ff4d6d] text-[#ff4d6d] rounded-md hover:bg-[#ffe5ea]">
             🇻🇳
             {' '}
             <span className="text-xs">▼</span>
           </button>
         </div>
 
-        {/* Cart button mobile */}
+        {/* Cart button mobile (giữ nguyên) */}
         <button
           type="button"
           onClick={() => setIsCartOpen(true)}
           style={{ borderColor: theme.textColor, color: theme.textColor }}
           className="md:hidden fixed bottom-4 right-4 z-50  text-white p-4 rounded-full shadow-lg"
+          aria-label="Giỏ hàng (mobile)"
         >
           <div className="relative">
             <FaShoppingCart className="text-xl" />
@@ -352,6 +385,7 @@ export default function Header() {
         onClose={() => setIsCartOpen(false)}
       />
 
+      {/* Floating chat support giữ nguyên */}
       <div className="fixed right-4 bottom-28 md:bottom-24 md:right-6 z-[10000000] pointer-events-none">
         <div className="pointer-events-auto">
           <ChatSupportButton />
