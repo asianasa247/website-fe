@@ -154,7 +154,7 @@ export default function ProductZone({
               </div>
 
               {/* Giá */}
-              <div className="mt-3 space-y-1">
+              <div className="mt-3 space-y-1 text-right self-end">
                 <div className="text-base font-bold " style={{ color: theme.textColorSecondary }}>
                   {formatCurrency(getDiscountedPrice(product))}
                   {' '}
