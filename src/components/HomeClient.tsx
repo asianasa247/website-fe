@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@/context/theme-provider';
 import NewsSection from './NewsCard';
 import ProductZone from './ProductCard';
 
 type Props = {
   webCategories: any[];
+  allProducts?: any[];
+  uncategorizedProducts?: any[];
 };
 
-export default function HomeClient({ webCategories }: Props) {
+export default function HomeClient({ webCategories, allProducts = [], uncategorizedProducts }: Props) {
   const [categories] = useState(webCategories);
   const theme = useTheme();
   useEffect(() => {
@@ -24,8 +26,41 @@ export default function HomeClient({ webCategories }: Props) {
     }
   }
 
+  const computedUncategorized = useMemo(() => {
+    if (uncategorizedProducts?.length) {
+      return uncategorizedProducts;
+    }
+    if (!allProducts?.length) {
+      return [];
+    }
+    const idsInCategories = new Set<number>(
+      categories.flatMap(cat => (cat?.products || []).map((p: any) => Number(p.id))),
+    );
+    return allProducts.filter((p: any) => !idsInCategories.has(Number(p.id)));
+  }, [uncategorizedProducts, allProducts, categories]);
+
   return (
     <div className="space-y-12 px-1 md:px-8 lg:px-16">
+      {computedUncategorized.length > 0 && (
+        <div
+          className="  md:p-8 transition-all duration-300"
+        >
+          {/* Header danh mục mặc định */}
+          <div className="flex items-center justify-center mb-4" style={{ color: theme.textColor }}>
+            <h2 className="text-xl md:text-2xl font-bold ">
+              Sản phẩm mới
+            </h2>
+          </div>
+          <ProductZone
+            products={computedUncategorized}
+            imageUrls={[]}
+            isSizeImage={false}
+            unit="VNĐ"
+            isShowFavourite={true}
+          />
+        </div>
+      )}
+
       {categories.map(cat => (
         <div
           key={cat.id}
