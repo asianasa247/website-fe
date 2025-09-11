@@ -184,29 +184,29 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full bg-white relative sticky top-0 z-[1000] transition-shadow">
+    <header className="w-full relative sticky top-0 z-[1000] transition-shadow">
       {/* ✅ Top bar */}
       <FloatingActions />
-      <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+      <div className="text-xs hidden md:block select-none" style={{ backgroundColor: theme.lightPrimaryColor, color: theme.lightPrimaryColor }}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center px-6 py-2">
           {/* Thông tin công ty */}
-          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+          <div className="flex items-center gap-4 flex-wrap font-bold" style={{ color: theme.lightPrimaryColor }}>
+            <span className="flex items-center gap-1 font-bold" style={{ color: theme.textColorSecondary }}>
               <FaPhoneAlt className="" />
               {' '}
               {companyInfo?.phone}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ color: theme.textColorSecondary }}>
               <FaEnvelope className="" />
               {' '}
               {companyInfo?.email}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ color: theme.textColorSecondary }}>
               <FaMapMarkerAlt className="" />
               {' '}
               {companyInfo?.address}
             </span>
-            <span className="flex items-center gap-1 font-bold" style={{ backgroundColor: theme.textColor, color: theme.primaryColorText }}>
+            <span className="flex items-center gap-1 font-bold" style={{ color: theme.textColorSecondary }}>
               <FaClock className="" />
               {' '}
               {companyInfo?.websiteName || '8:00 - 17:00'}
@@ -245,10 +245,10 @@ export default function Header() {
       </div>
 
       {/* ✅ Main nav bar */}
-      <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b border-[#ededed] bg-white" style={{ backgroundColor: theme.primaryColor }}>
+      <div className="flex items-center justify-between px-4 md:px-16 py-3 border-b" style={{ backgroundColor: theme.primaryColor }}>
         {/* Logo */}
         {companyLogo && (
-          <Link href="/" aria-label="Trang chủ" style={{ color: theme.invalidPrimaryColor }}>
+          <Link href="/" aria-label="Trang chủ" style={{ color: theme.textColorSecondary }}>
             <img src={companyLogo} alt="Logo" width={60} height={60} className="rounded-md hover:opacity-90 transition-opacity" />
           </Link>
         )}
@@ -262,7 +262,7 @@ export default function Header() {
         <nav className="hidden md:flex flex-1 justify-start ml-6">
           <ul className="flex gap-6 font-medium text-[#343a40]">
             {mainMenu.map(item => (
-              <li key={item.code} className="cursor-pointer" style={{ color: theme.invalidPrimaryColor }}>
+              <li key={item.code} className="cursor-pointer" style={{ color: theme.textColor }}>
                 <Link
                   href={item.typeMenu}
                   className="relative inline-block py-1 transition-colors hover:text-[#e91e63] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e91e63]/40 rounded"
@@ -276,7 +276,7 @@ export default function Header() {
             {moreMenu.length > 0 && (
               <li
                 className="relative cursor-pointer flex items-center gap-1 group text-[#343a40] hover:text-[#e91e63]"
-                style={{ color: theme.invalidPrimaryColor }}
+                style={{ color: theme.textColor }}
               >
                 Xem thêm
                 {' '}
@@ -296,15 +296,15 @@ export default function Header() {
         {/* Search + Actions (desktop only) */}
         <div className="hidden md:flex items-center gap-3">
           {/* Search */}
-          <form className="flex items-center border rounded-full px-3 py-1.5 focus-within:shadow-[0_0_0_3px_rgba(233,30,99,0.12)]" style={{ color: theme.invalidPrimaryColor }}>
+          <form className="flex items-center border rounded-full px-3 py-1.5 focus-within:shadow-[0_0_0_3px_rgba(233,30,99,0.12)]" style={{ color: theme.textColor }}>
             <input
               type="text"
               placeholder="Tìm kiếm"
-              className="outline-none border-none bg-transparent px-2 w-[160px] placeholder-gray-400 text-[#343a40]"
+              className="outline-none border-none bg-transparent px-2 w-[160px]"
               aria-label="Tìm kiếm"
-              style={{ color: theme.invalidPrimaryColor }}
+              style={{ color: theme.textColor, border: theme.textColor }}
             />
-            <button type="submit" className="text-lg" aria-label="Search" style={{ color: theme.invalidPrimaryColor }}>
+            <button type="submit" className="text-lg" aria-label="Search" style={{ color: theme.textColor }}>
               <FiSearch />
             </button>
           </form>
@@ -315,11 +315,11 @@ export default function Header() {
             onClick={() => setIsCartOpen(true)}
             className="relative w-9 h-9 border text-[#555] rounded-full flex items-center justify-center hover:bg-[#fff1f4] transition-colors"
             aria-label="Giỏ hàng"
-            style={{ color: theme.invalidPrimaryColor }}
+            style={{ color: theme.textColor }}
           >
             <FaShoppingCart />
             {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center" style={{ color: theme.invalidPrimaryColor }}>
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center" style={{ color: theme.textColor }}>
                 {totalItems}
               </span>
             )}
@@ -329,10 +329,10 @@ export default function Header() {
           {!isLoggedIn
             ? (
                 <>
-                  <Link href="/sign-in" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.invalidPrimaryColor }}>
+                  <Link href="/sign-in" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.textColor }}>
                     Đăng nhập
                   </Link>
-                  <Link href="/sign-up" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.invalidPrimaryColor }}>
+                  <Link href="/sign-up" className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors" style={{ color: theme.textColor }}>
                     Đăng ký
                   </Link>
                 </>
@@ -343,20 +343,20 @@ export default function Header() {
                   onClick={handleLogout}
                   className="px-3 py-1.5 border rounded-full hover:bg-[#ffe5ea] transition-colors"
                   title="Đăng xuất"
-                  style={{ color: theme.invalidPrimaryColor }}
+                  style={{ color: theme.textColor }}
                 >
                   Đăng xuất
                 </button>
               )}
 
           {/* Nút phụ: giữ 🤍, đã bỏ emoji 🛒 trùng */}
-          <button type="button" className="w-9 h-9 border rounded-full flex items-center justify-center hover:bg-[#fff1f4]" aria-label="Yêu thích" style={{ color: theme.invalidPrimaryColor }}>
+          <button type="button" className="w-9 h-9 border rounded-full flex items-center justify-center hover:bg-[#fff1f4]" aria-label="Yêu thích" style={{ color: theme.textColor }}>
             🤍
           </button>
-          <button type="button" className="flex items-center gap-1 px-3 py-1.5 border rounded-md hover:bg-[#ffe5ea]" style={{ color: theme.invalidPrimaryColor }}>
+          <button type="button" className="flex items-center gap-1 px-3 py-1.5 border rounded-md hover:bg-[#ffe5ea]" style={{ color: theme.textColor }}>
             🇻🇳
             {' '}
-            <span className="text-xs" style={{ color: theme.invalidPrimaryColor }}>▼</span>
+            <span className="text-xs" style={{ color: theme.textColor }}>▼</span>
           </button>
         </div>
 

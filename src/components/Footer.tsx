@@ -96,18 +96,17 @@ const Footer = () => {
 
   return (
     <div
-      className="footer-wrapper text-gray-800 mt-10 px-6 py-10 font-bold border-t"
+      className="footer-wrapper mt-10 px-6 py-10 font-bold border-t"
       style={{
-        color: themeColors?.invalidPrimaryColor ?? '#374151',
+        color: themeColors?.textColorSecondary ?? '#374151',
         backgroundColor: themeColors?.primaryColor ?? '#f3f4f6',
-        borderColor: themeColors?.lightPrimaryColor ?? '#e5e7eb',
       }}
     >
 
       {/* Footer columns */}
       <div
         className="footer-columns grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm"
-        style={{ color: themeColors?.invalidPrimaryColor ?? '#374151' }}
+        style={{ color: themeColors?.textColorSecondary ?? '#374151' }}
       >
         {/* Cột 1 */}
         <div className="footer-col">
@@ -167,7 +166,7 @@ const Footer = () => {
               required
               className="w-full px-3 py-2 border rounded mb-2 "
               style={{
-                color: themeColors?.invalidPrimaryColor ?? '#374151',
+                color: themeColors?.textColorSecondary,
               }}
             />
             <input
@@ -177,7 +176,7 @@ const Footer = () => {
               placeholder="Số điện thoại"
               className="w-full px-3 py-2 border rounded mb-2 "
               style={{
-                color: themeColors?.invalidPrimaryColor ?? '#374151',
+                color: themeColors?.textColorSecondary,
               }}
             />
             <textarea
@@ -187,7 +186,7 @@ const Footer = () => {
               onChange={e => setNote(e.target.value)}
               className="w-full px-3 py-2 border rounded mb-2"
               style={{
-                color: themeColors?.invalidPrimaryColor ?? '#374151',
+                color: themeColors?.textColorSecondary,
               }}
             >
             </textarea>
@@ -196,7 +195,7 @@ const Footer = () => {
               disabled={submitting}
               className="w-full text-blue-500 py-2 px-4 rounded disabled:opacity-60"
               style={{
-                background: themeColors?.invalidPrimaryColor ?? '#374151',
+                background: themeColors?.textColorSecondary,
               }}
             >
               {submitting ? 'Đang gửi...' : 'Gửi'}
