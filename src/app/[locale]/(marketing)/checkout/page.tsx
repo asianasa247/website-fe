@@ -75,7 +75,7 @@ export default function CheckoutPage() {
     loadDistricts();
   }, [form.provinceId]);
 
-  // Load wards when district changes
+  // Load wards when district changes (giữ để build địa chỉ nếu có)
   useEffect(() => {
     if (!form.districtId) {
       return;
@@ -121,12 +121,8 @@ export default function CheckoutPage() {
 
   const isFormValid = () => {
     return (
-      form.name
-      && form.phone
-      && form.address
-      && form.provinceId
-      && form.districtId
-      && form.wardId
+      form.name && form.phone && form.address && form.provinceId && form.districtId
+      // không yêu cầu wardId nữa
     );
   };
 
@@ -149,7 +145,7 @@ export default function CheckoutPage() {
         paymentAt: new Date().toISOString(),
         fromAt: new Date().toISOString(),
         toAt: new Date().toISOString(),
-        email: form.email?.trim() || undefined, // <- đổi ở đây
+        email: form.email?.trim() || undefined,
         phoneNumber: form.phone,
         paymentMethod: form.payment,
         shippingAddress: buildShippingAddress(),
@@ -157,13 +153,14 @@ export default function CheckoutPage() {
         promotion: form.promotion,
         provinceId: form.provinceId,
         districtId: form.districtId,
-        wardId: form.wardId,
+        wardId: form.wardId || undefined, // có thể undefined
         goods: cart.items.map(item => ({
           goodId: item.id,
           quantity: item.quantity,
           price: item.price,
         })),
       } as const;
+
       await createOrder(orderData);
 
       dispatch({ type: 'CLEAR_CART' });
@@ -261,21 +258,7 @@ export default function CheckoutPage() {
                   ))}
                 </select>
 
-                <select
-                  name="wardId"
-                  value={form.wardId}
-                  onChange={onChange}
-                  className="w-full p-3 border rounded-md focus:ring-2 focus:ring-green-200"
-                  disabled={!form.districtId}
-                  required
-                >
-                  <option value="">Chọn phường/xã *</option>
-                  {wards.map(ward => (
-                    <option key={ward.id} value={ward.id}>
-                      {ward.name}
-                    </option>
-                  ))}
-                </select>
+                {/* ĐÃ BỎ ô chọn phường/xã (wardId) */}
 
                 <input
                   name="address"
@@ -358,7 +341,6 @@ export default function CheckoutPage() {
                     <h4 className="font-medium">{item.name}</h4>
                     <div className="text-sm text-gray-500">
                       {item.quantity}
-                      {' '}
                       x
                       {formatVND(item.price)}
                     </div>
@@ -393,14 +375,13 @@ export default function CheckoutPage() {
                 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-colors duration-200 flex items-center justify-center gap-2"
             >
-              {loading
-                ? (
-                    <>
-                      <span className="animate-spin">⏳</span>
-                      <span>Đang xử lý...</span>
-                    </>
-                  )
-                : 'Đặt hàng'}
+              {loading && (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  <span>Đang xử lý...</span>
+                </>
+              )}
+              {!loading && 'Đặt hàng'}
             </button>
 
             <p className="text-xs text-gray-500 mt-4 text-center">
