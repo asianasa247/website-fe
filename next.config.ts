@@ -18,6 +18,7 @@ const baseConfig: NextConfig = {
       'bh.asianasa.com',
       // Thêm các domain khác nếu cần
     ],
+    unoptimized: true,
     // Nếu bạn dùng ảnh qua https, không cần cấu hình thêm
   },
 };
