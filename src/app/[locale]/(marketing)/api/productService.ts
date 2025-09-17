@@ -24,3 +24,13 @@ export const getProductPagging = async (
   const response = await api.get(url);
   return response.data;
 };
+
+// Lấy cấu hình category type=5 để đọc productCount (số lượng SP hiển thị trên UI)
+export const getCategoriesByType = async (
+  type: number,
+  page: number = 1,
+  pageSize: number = 1000,
+) => {
+  const response = await api.get('/Category', { params: { type, page, pageSize } });
+  return response.data;
+};

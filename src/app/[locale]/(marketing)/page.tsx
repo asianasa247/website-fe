@@ -17,6 +17,17 @@ export default async function Index() {
   const itemsRes = await dashboardService.getItemsByCategory({ menuTypes });
   const items = itemsRes.data || [];
 
+  // 2.1. Map type -> productCount (mỗi type là 1 menu)
+  // Ưu tiên productCount > 0; nếu nhiều bản ghi cùng type thì lấy cái đầu tiên có giá trị.
+  const productCountByType: Record<number, number> = {};
+  for (const c of allCategories) {
+    if (
+      typeof c?.type === 'number' && typeof c?.productCount === 'number' && c.productCount > 0 && typeof productCountByType[c.type] === 'undefined'
+    ) {
+      productCountByType[c.type] = c.productCount;
+    }
+  }
+
   // 3. Gộp categories có item & được hiển thị
   const webCategories = items
     .map((item: any) => {
@@ -48,7 +59,8 @@ export default async function Index() {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
       <Slider />
-      <HomeClient webCategories={webCategories} />
+      {/* Truyền thêm productCountByType để HomeClient set rows theo từng type */}
+      <HomeClient webCategories={webCategories} productCountByType={productCountByType} />
     </>
   );
 }

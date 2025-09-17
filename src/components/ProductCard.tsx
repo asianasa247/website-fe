@@ -26,6 +26,7 @@ type Props = {
   imageUrls: string[];
   unit: string;
   isShowFavourite?: boolean;
+  pageSize?: number; // số thẻ hiển thị ban đầu (ăn theo productCount của category)
 };
 
 export default function ProductZone({
@@ -34,11 +35,15 @@ export default function ProductZone({
   imageUrls,
   unit,
   isShowFavourite = true,
+  pageSize,
 }: Props) {
-  const [page, setPage] = useState(1);
-  const rows = 4;
-  const selectProducts = products?.slice(0, page * rows);
   const theme = useTheme();
+  const [showAll, setShowAll] = useState(false);
+
+  // Hiển thị ban đầu = pageSize; bấm "Xem thêm" -> show toàn bộ
+  const rows = typeof pageSize === 'number' && pageSize > 0 ? pageSize : 4;
+  const visibleProducts = showAll ? products : products?.slice(0, rows);
+
   const formatCurrency = (money: number) => money.toLocaleString('vi-VN');
 
   const getDiscountedPrice = (product: Product) => {
@@ -46,6 +51,7 @@ export default function ProductZone({
     const discount = product.discount || 0;
     return price - (price * discount) / 100;
   };
+
   const [showToast, setShowToast] = useState(false);
   const { dispatch } = useCart();
   const handleAddToCart = (product: Product) => {
@@ -96,12 +102,13 @@ export default function ProductZone({
 
       {/* Product Cards */}
       <div
-        className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] justify-center gap-4"
+        // Giữ card width ổn định, 1 card cũng không bị kéo full width
+        className="grid grid-cols-[repeat(auto-fit,minmax(220px,280px))] justify-center gap-4"
       >
-        {selectProducts?.map(product => (
+        {visibleProducts?.map(product => (
           <div
             key={product.id}
-            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w:[300px] w-full mx-auto"
+            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w-[300px] w-full mx-auto"
           >
             {/* Discount badge */}
             {product.discount && (
@@ -157,13 +164,11 @@ export default function ProductZone({
               <div className="mt-3 space-y-1 text-right self-end">
                 <div className="text-base font-bold " style={{ color: theme.textColorSecondary }}>
                   {formatCurrency(getDiscountedPrice(product))}
-                  {' '}
                   {unit}
                 </div>
                 {product.discount && (
                   <div className="text-xs  line-through" style={{ color: theme.textColorSecondary }}>
                     {formatCurrency(product.webPriceVietNam || 0)}
-                    {' '}
                     {unit}
                   </div>
                 )}
@@ -190,12 +195,12 @@ export default function ProductZone({
         ))}
       </div>
 
-      {/* Load more */}
-      {products?.length > selectProducts?.length && (
+      {/* Xem thêm: chỉ hiện khi tổng > productCount và chưa bung hết */}
+      {products?.length > rows && !showAll && (
         <div className="text-center">
           <button
             type="button"
-            onClick={() => setPage(prev => prev + 1)}
+            onClick={() => setShowAll(true)}
             className="px-6 py-2 text-sm rounded-full text-orange-600 border border-orange-500 hover:bg-orange-50 hover:shadow transition"
           >
             Xem thêm

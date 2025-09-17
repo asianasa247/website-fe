@@ -9,14 +9,19 @@ type Props = {
   webCategories: any[];
   allProducts?: any[];
   uncategorizedProducts?: any[];
+  productCountByType?: Record<number, number>; // <-- thêm
 };
 
-export default function HomeClient({ webCategories, allProducts = [], uncategorizedProducts }: Props) {
+export default function HomeClient({
+  webCategories,
+  allProducts = [],
+  uncategorizedProducts,
+  productCountByType = {},
+}: Props) {
   const [categories] = useState(webCategories);
   const theme = useTheme();
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   function parseImageObjects(imageString: string): { FileName: string }[] {
     try {
@@ -67,6 +72,7 @@ export default function HomeClient({ webCategories, allProducts = [], uncategori
             isSizeImage={false}
             unit="VNĐ"
             isShowFavourite={true}
+            // Không truyền pageSize -> ProductZone dùng mặc định (4)
           />
         </div>
       )}
@@ -77,6 +83,9 @@ export default function HomeClient({ webCategories, allProducts = [], uncategori
         const imageFiles: { FileName: string }[] = (fromCatImage.length ? fromCatImage : fromImageUrls).slice(0, 4);
         const imageUrls: string[] = toImageUrls(imageFiles);
         const showNewsSection = !cat.isProduct && imageFiles.length > 0;
+
+        // pageSize = ưu tiên productCount của CHÍNH category; nếu không có thì fallback theo type
+        const pageSizeForCat = typeof cat?.productCount === 'number' && cat.productCount > 0 ? cat.productCount : (typeof cat?.type === 'number' ? productCountByType[Number(cat.type)] : undefined);
 
         return (
           <div
@@ -90,7 +99,7 @@ export default function HomeClient({ webCategories, allProducts = [], uncategori
               </h2>
             </div>
 
-            {/* Hiển thị sản phẩm */}
+            {/* Hiển thị sản phẩm: ban đầu = productCount; bấm Xem thêm -> bung toàn bộ */}
             {cat.isProduct && cat.products?.length > 0 && (
               <ProductZone
                 products={cat.products}
@@ -98,6 +107,7 @@ export default function HomeClient({ webCategories, allProducts = [], uncategori
                 isSizeImage={cat.isSizeImage || false}
                 unit="VNĐ"
                 isShowFavourite={true}
+                pageSize={pageSizeForCat}
               />
             )}
 
