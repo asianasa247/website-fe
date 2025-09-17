@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { FaFacebookSquare } from 'react-icons/fa';
 import authService from '@/app/[locale]/(marketing)/api/auth';
 import dashboardService from '@/app/[locale]/(marketing)/api/dashboard';
 import { getIntroduceList } from '@/app/[locale]/(marketing)/api/introduceService';
@@ -112,34 +113,18 @@ const Footer = () => {
         <div className="footer-col">
           <h5 className="font-semibold mb-2 text-base">{companyInfo?.name}</h5>
           <p>
-            <strong>
-              Địa chỉ
-              :
-            </strong>
-            {' '}
+            <strong>Địa chỉ:</strong>
             {companyInfo?.address}
           </p>
           <p>
-            <strong>
-              Mã số thuế
-              :
-            </strong>
-            {' '}
+            <strong>Mã số thuế:</strong>
             {companyInfo?.mst}
             <br />
-            <strong>
-              Sô điện thoại
-              :
-            </strong>
-            {' '}
+            <strong>Sô điện thoại:</strong>
             {companyInfo?.phone}
           </p>
           <p>
-            <strong>
-              Email
-              :
-            </strong>
-            {' '}
+            <strong>Email:</strong>
             {companyInfo?.email}
           </p>
         </div>
@@ -155,6 +140,7 @@ const Footer = () => {
             </div>
           ))}
         </div>
+
         {/* Cột 3 */}
         <div className="footer-col">
           <form onSubmit={handleSubscribe} className="subscribe-form">
@@ -212,6 +198,34 @@ const Footer = () => {
         <div className="footer-col">
           <h5 className="font-semibold mb-2 text-base">Mạng xã hội</h5>
           <div className="flex gap-3 flex-wrap">
+            {/* ⬇️ Thêm 2 icon giống topbar: Facebook & Zalo */}
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Facebook"
+              className="inline-flex text-[#1877f2] hover:opacity-90 transition-opacity"
+              aria-label="Facebook"
+            >
+              <FaFacebookSquare className="w-6 h-6" />
+            </a>
+            <a
+              href="https://zalo.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Zalo"
+              className="inline-flex"
+              aria-label="Zalo"
+            >
+              <img
+                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png"
+                alt="Zalo"
+                className="w-6 h-6 rounded"
+                referrerPolicy="no-referrer"
+              />
+            </a>
+
+            {/* Các icon lấy từ API (giữ nguyên) */}
             {socials.map(social => (
               <a
                 key={social.title}

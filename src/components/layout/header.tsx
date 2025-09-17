@@ -126,7 +126,6 @@ export default function Header() {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('session');
 
-      // dọn cache tiện ích nội bộ (nếu có)
       (authService as any)?.setToken?.('');
       (authService as any).userInfo = null;
     } catch {
@@ -384,9 +383,38 @@ export default function Header() {
         onClose={() => setIsCartOpen(false)}
       />
 
-      {/* Floating chat support giữ nguyên */}
-      <div className="fixed right-4 bottom-28 md:bottom-24 md:right-6 z-[10000000] pointer-events-none">
-        <div className="pointer-events-auto">
+      {/* Floating: social icons + chat support */}
+      <div className="fixed right-4 bottom-60 md:bottom-43 md:right-6 z-[10000000] pointer-events-none">
+        <div className="pointer-events-auto flex flex-col items-end gap-2">
+          {/* ⬇️ 2 icon Facebook + Zalo (copy từ topbar) */}
+          <div className="flex flex-col items-center gap-2">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Facebook"
+              className="inline-flex w-10 h-10 rounded-full bg-white shadow-md hover:opacity-90 transition-opacity items-center justify-center"
+              aria-label="Facebook"
+            >
+              <FaFacebookSquare className="w-6 h-6 text-[#1877f2]" />
+            </a>
+            <a
+              href="https://zalo.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Zalo"
+              className="inline-flex w-10 h-10 rounded-full bg-white shadow-md items-center justify-center"
+              aria-label="Zalo"
+            >
+              <img
+                src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png"
+                alt="Zalo"
+                className="w-6 h-6 rounded"
+                referrerPolicy="no-referrer"
+              />
+            </a>
+          </div>
+
           <ChatSupportButton />
         </div>
       </div>
