@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { getPartnerProductsSelected } from '@/app/[locale]/(marketing)/api/productService';
 import { useTheme } from '@/context/theme-provider';
 import NewsSection from './NewsCard';
 import ProductZone from './ProductCard';
@@ -19,9 +20,19 @@ export default function HomeClient({
   productCountByType = {},
 }: Props) {
   const [categories] = useState(webCategories);
+  const [partnerProducts, setPartnerProducts] = useState<any[]>([]);
   const theme = useTheme();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const flattened = await getPartnerProductsSelected();
+        setPartnerProducts(flattened);
+      } catch {
+        setPartnerProducts([]);
+      }
+    })();
+  }, []);
 
   function parseImageObjects(imageString: string): { FileName: string }[] {
     try {
@@ -124,6 +135,24 @@ export default function HomeClient({
           </div>
         );
       })}
+
+      {/* ====== CUỐI TRANG: Sản phẩm hợp tác của các doanh nghiệp khác ====== */}
+      {partnerProducts.length > 0 && (
+        <div className="  md:p-8 transition-all duration-300">
+          <div className="flex items-center justify-center mb-4" style={{ color: theme.textColor }}>
+            <h2 className="text-xl md:text-2xl font-bold ">
+              Sản phẩm hợp tác của các doanh nghiệp khác
+            </h2>
+          </div>
+          <ProductZone
+            products={partnerProducts}
+            imageUrls={[]}
+            isSizeImage={false}
+            unit="VNĐ"
+            isShowFavourite={false}
+          />
+        </div>
+      )}
     </div>
   );
 }

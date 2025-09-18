@@ -2,6 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 'use client';
 
+import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useCart } from '@/context/cart-context';
@@ -18,6 +19,8 @@ type Product = {
   webPriceVietNam?: number;
   discount?: number;
   heart?: boolean;
+  // thêm để nhận biết sản phẩm đối tác (API mới)
+  urlWeb?: string;
 };
 
 type Props = {
@@ -105,94 +108,125 @@ export default function ProductZone({
         // Giữ card width ổn định, 1 card cũng không bị kéo full width
         className="grid grid-cols-[repeat(auto-fit,minmax(220px,280px))] justify-center gap-4"
       >
-        {visibleProducts?.map(product => (
-          <div
-            key={product.id}
-            className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w-[300px] w-full mx-auto"
-          >
-            {/* Discount badge */}
-            {product.discount && (
-              <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
-                -
-                {product.discount}
-                %
-              </div>
-            )}
+        {visibleProducts?.map((product) => {
+          const isExternal = !!product.urlWeb;
+          const href = isExternal ? product.urlWeb! : `/products/${product.id}`;
 
-            {/* Heart icon */}
-            {isShowFavourite && (
-              <div
-                className={`absolute top-3 right-3 cursor-pointer text-lg ${
-                  product.heart ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
-                }`}
-              >
-                <i className="pi pi-heart" />
-              </div>
-            )}
+          // block ảnh & tiêu đề tái sử dụng
+          const imageBlock = (
+            <div className="overflow-hidden rounded-xl mb-3">
+              <img
+                src={process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + product.image1}
+                alt={product.webGoodNameVietNam || 'product'}
+                className="w-full h-56 object-cover transform transition-transform duration-500 hover:scale-105"
+                onError={e => (e.currentTarget.src = '/images/no-image.png')}
+              />
+            </div>
+          );
 
-            {/* Image */}
-            <Link href={`/products/${product.id}`}>
-              <div className="overflow-hidden rounded-xl mb-3">
-                <img
-                  src={process.env.NEXT_PUBLIC_SERVER_URL_IMAGE + product.image1}
-                  alt={product.webGoodNameVietNam || 'product'}
-                  className="w-full h-56 object-cover transform transition-transform duration-500 hover:scale-105"
-                  onError={e => (e.currentTarget.src = '/images/no-image.png')}
-                />
-              </div>
-            </Link>
+          const titleBlock = (
+            <span>{product.webGoodNameVietNam}</span>
+          );
 
-            {/* Info */}
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <h3 className="font-semibold text-sm  line-clamp-2 mb-1  transition" style={{ color: theme.textColor }}>
-                  <Link href={`/products/${product.id}`}>
-                    {product.webGoodNameVietNam}
-                  </Link>
-                </h3>
-                <p className="text-xs  line-clamp-1" style={{ color: theme.textColorSecondary }}>
-                  {product.detail2 || product.detail1}
-                </p>
-                {product.titleVietNam && (
-                  <p className="text-xs text-gray-400 line-clamp-2 mt-1" style={{ color: theme.textColorSecondary }}>
-                    {product.titleVietNam}
-                  </p>
-                )}
-              </div>
+          // wrap bằng if/else để tránh ternary trong JSX (sạch rule newline/indent)
+          let imageWrapped: ReactElement;
+          let titleWrapped: ReactElement;
+          if (isExternal) {
+            imageWrapped = (
+              <a href={href} target="_blank" rel="noopener noreferrer">{imageBlock}</a>
+            );
+            titleWrapped = (
+              <a href={href} target="_blank" rel="noopener noreferrer">{titleBlock}</a>
+            );
+          } else {
+            imageWrapped = (
+              <Link href={href}>{imageBlock}</Link>
+            );
+            titleWrapped = (
+              <Link href={href}>{titleBlock}</Link>
+            );
+          }
 
-              {/* Giá */}
-              <div className="mt-3 space-y-1 text-right self-end">
-                <div className="text-base font-bold " style={{ color: theme.textColorSecondary }}>
-                  {formatCurrency(getDiscountedPrice(product))}
-                  {unit}
+          return (
+            <div
+              key={product.id}
+              className="relative bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-2 flex flex-col max-w-[300px] w-full mx-auto"
+            >
+              {/* Discount badge */}
+              {product.discount && (
+                <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
+                  -
+                  {product.discount}
+                  %
                 </div>
-                {product.discount && (
-                  <div className="text-xs  line-through" style={{ color: theme.textColorSecondary }}>
-                    {formatCurrency(product.webPriceVietNam || 0)}
+              )}
+
+              {/* Heart icon: ẩn với hàng đối tác */}
+              {isShowFavourite && !isExternal && (
+                <div
+                  className={`absolute top-3 right-3 cursor-pointer text-lg ${
+                    product.heart ? 'text-red-500' : 'text-gray-300 hover:text-red-400'
+                  }`}
+                >
+                  <i className="pi pi-heart" />
+                </div>
+              )}
+
+              {/* Image (đã wrap) */}
+              {imageWrapped}
+
+              {/* Info */}
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-semibold text-sm  line-clamp-2 mb-1  transition" style={{ color: theme.textColor }}>
+                    {titleWrapped}
+                  </h3>
+                  <p className="text-xs  line-clamp-1" style={{ color: theme.textColorSecondary }}>
+                    {product.detail2 || product.detail1}
+                  </p>
+                  {product.titleVietNam && (
+                    <p className="text-xs text-gray-400 line-clamp-2 mt-1" style={{ color: theme.textColorSecondary }}>
+                      {product.titleVietNam}
+                    </p>
+                  )}
+                </div>
+
+                {/* Giá */}
+                <div className="mt-3 space-y-1 text-right self-end">
+                  <div className="text-base font-bold " style={{ color: theme.textColorSecondary }}>
+                    {formatCurrency(getDiscountedPrice(product))}
                     {unit}
                   </div>
-                )}
-              </div>
+                  {product.discount && (
+                    <div className="text-xs  line-through" style={{ color: theme.textColorSecondary }}>
+                      {formatCurrency(product.webPriceVietNam || 0)}
+                      {unit}
+                    </div>
+                  )}
+                </div>
 
-              {/* Button đẹp trên mobile */}
-              <button
-                type="button"
-                onClick={() => handleAddToCart(product)}
-                className="mt-4 w-full flex items-center justify-center gap-2
+                {/* Nút giỏ hàng: ẨN nếu là sản phẩm đối tác */}
+                {!isExternal && (
+                  <button
+                    type="button"
+                    onClick={() => handleAddToCart(product)}
+                    className="mt-4 w-full flex items-center justify-center gap-2
       bg-gradient-to-r
 
       active:scale-95
     text-sm font-medium
       py-3 rounded-full
       transition-all shadow-md"
-                style={{ color: theme.textColor, border: theme.textColor }}
-              >
-                <i className="pi pi-shopping-cart text-base" />
-                <span>Thêm vào giỏ hàng</span>
-              </button>
+                    style={{ color: theme.textColor, border: theme.textColor }}
+                  >
+                    <i className="pi pi-shopping-cart text-base" />
+                    <span>Thêm vào giỏ hàng</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Xem thêm: chỉ hiện khi tổng > productCount và chưa bung hết */}
